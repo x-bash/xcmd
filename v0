@@ -1,18 +1,6 @@
 # shellcheck shell=sh disable=SC3043
 
-
-_x_search_path(){
-    local cur="${1:?Provide starting path}"
-    local relative_filepath="${2:?Provide relative filepath}"
-    while [ ! "$cur" = "" ]; do
-        if [ -f "$cur/.x-cmd/$relative_filepath" ]; then
-            echo "$cur"
-            return 0
-        fi
-        cur=${cur%/*}
-    done
-    return 1
-}
+xrc log init xcmd
 
 _x_mirror(){
     "https://x-cmd.github.io/x-official"
@@ -95,20 +83,52 @@ _x_exe(){
     if [ -x "$filepath" ]; then
         "$filepath" ${1:+"$@"}
         local code=$?
-
+        # Bad interpreter
         if [ $code != 126 ] && [ $code != 127 ]; then
             _x_guest "$filepath" ${1:+"$@"}
             return
         fi
     fi
 
-    if _x_guest "$filepath" ${1:+"$@"}; then
-        if [ $? = 126 ]; then
-            if file "$filepath" | grep -iq "ASCII"; then
-                cat "$filepath"
-            else
-                x hex "$filepath" ${1:+"$@"}
-            fi
+    _x_guest "$filepath" ${1:+"$@"}
+    code=$?
+
+    if [ $code = 126 ]; then
+        if head -n1 "$filepath" | grep "\#\!" 1>/dev/null; then
+            printf "=> \033[33m%s\033[0m:\n   %s\n\n" "Target file is NOT an excuatable" "$filepath"
+            local action
+            while true; do
+                printf "%s" "=> Change its mode to +x? (y/n, default is y)? " >&2
+                read action
+                case $action in
+                    n|no|nein|ne)  cat <<A
+=> Sorry. \033[31;1mCANNOT execute an non-executable file \033[0m. 
+=> You could grant the permission as following:
+\033[32m    chmod +x \"$fp\" \033[;0m
+A
+                        return 1
+                        ;;
+                    *)
+                        if [ "$action" = y ] || [ -z "$action" ]; then
+                            if chmod +x "$filepath"; then
+                                printf "\033[32m%s\033[0m\n\n" "Successfully grant execute permission." >&2
+                                "$filepath" ${1:+"$@"}
+                                return
+                            else
+                                local code=$?
+                                printf "\033[31m%s\033[0m\n\n" "Failed to grant execute permission." >&2
+                                return "$code"
+                            fi
+                        fi
+                        continue ;;
+                esac
+            done
+        fi
+
+        if file "$filepath" | grep -iq "ASCII"; then
+            cat "$filepath"
+        else
+            x hex "$filepath" ${1:+"$@"}
         fi
     fi
 
@@ -159,21 +179,9 @@ _x_run(){
     esac
 }
 
-_x_uproot_find(){
-    local cur="${1:?Provide starting path}"
-    local relative_filepath="${2:?Provide relative filepath}"
-    while [ ! "$cur" = "" ]; do
-        if [ -f "$cur/$relative_filepath" ]; then
-            echo "$cur"
-            return 0
-        fi
-        cur=${cur%/*}
-    done
-    return 1
-}
-
 x(){
-    case "${1:?Provide Sub Command}" in
+    local subcmd=$1;    shift
+    case "$subcmd" in
         rc|src) SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
         # java | jar);;
 
@@ -183,92 +191,81 @@ x(){
             ) ;;
         docker|dk|xdk) (
                 xrc xdk
-                shift 1
                 xdk ${1:+"$@"}
             ) ;;
-        python|py) 
-            shift;
+        python|py)
             # Install python using pyenv
             # xrc pyenv
             python "$(_x_official_which "$2")" "$@"     ;;
         javascript|js)
-            shift;
             # Install node using nvm
             node "$(_x_official_which "$2")" "$@"       ;;
         typescript|ts)
-            shift;
             # Install node using nvm
             ts-node "$(_x_official_which "$2")" "$@"    ;;
         ruby|rb)
-            shift;
             python "$(_x_official_which "$2")" "$@"     ;;
         lua)
-            shift
             ;;
         7z)
-            shift
             ( 
                 xrc p7z
                 p7z ${1:+"$@"}
             ) ;;
         ps|procs)
-            shift;  _x_xrc_run procs "$@" ;;
+            _x_xrc_run procs "$@" ;;
         du|dust)
-            shift;  _x_xrc_run dust  "$@" ;;
+            _x_xrc_run dust  "$@" ;;
         ls)
-            shift;  _x_xrc_run exa   "$@" ;;
+            _x_xrc_run exa   "$@" ;;
         ll)
-            shift;  x ls -l ${1:+"$@"} ;;
+            x ls -l ${1:+"$@"} ;;
         bat|cat)
-            shift;  _x_xrc_run bat   "$@" ;;
+            _x_xrc_run bat   "$@" ;;
         bw)
-            shift;  _x_xrc_run bw   "$@" ;;
+            _x_xrc_run bw   "$@" ;;
         exe)
-            if [ ! -x "$fp" ]; then
-                printf "=> \033[33m%s\033[0m:\n   %s\n\n" "Target file is NOT an excuatable" "$fp"
-                local action
-                while true; do
-                    printf "%s" "=> Change its mode to +x? (y/n, default is y)? " >&2
-                    read action
-                    case $action in
-                        y)  if chmod +x "$fp"; then
-                                printf "\033[32m%s\033[0m\n\n" "Successfully grant execute permission." >&2
-                            else
-                                local code=$?
-                                printf "\033[31m%s\033[0m\n\n" "Failed to grant execute permission." >&2
-                                return "$code"
-                            fi
-                            break ;;
-                        n)  echo -e "
-=> Sorry. \033[31;1mCANNOT execute an non-executable file \033[0m. You could grant the permission as following:
-\033[32m    chmod +x \"$fp\" \033[;0m
-"
-                            return 1  
-                            ;;
-                        "") chmod +x "$fp" ;;
-                        *)  continue ;;
-                    esac
-                done
-            fi
-            "$fp" ${1:+"$@"}            
-            ;;
+            _x_exe "$fp" ${1:+"$@"} ;;
         run)
-            local fp="$2"; shift 2
+            local fp="$1"; shift 1
             case "$fp" in
                 *.py)       x python "$fp" ${1:+"$@"}   ;;
                 *.rb)       x ruby "$fp" ${1:+"$@"}     ;;
                 *.lua)      x lua "$fp" ${1:+"$@"}      ;;
                 *.ts)       x ts "$fp" ${1:+"$@"}       ;;
-                *)          x exe "$fp" ${1:+"$@"}      ;;
+                *)          _x_exe "$fp" ${1:+"$@"}      ;;
             esac
             ;;
-        *)  
+        search_path)
+            local cur="${1:?Provide starting path}"
+            local relative_filepath="${2:?Provide relative filepath}"
+            while [ ! "$cur" = "" ]; do
+                if [ -f "$cur/$relative_filepath" ]; then
+                    echo "$cur"
+                    return 0
+                fi
+                cur=${cur%/*}
+            done
+            return 1
+            ;;
+        which|w)
             local p
-            local relative_path="$1"
-            if p="$(_x_search_path "$(pwd)" "$relative_path")"; then
-                shift
-                _x_exe "$p/.x-cmd/$relative_path" ${1:+"$@"}
-                return 0
+            local relative_path
+            for relative_path in "$@"; do
+                xcmd_log debug "Relative Path: $relative_path"
+                if p="$(x search_path "$(pwd)" ".x-cmd/$relative_path")"; then
+                    echo "$p/.x-cmd/$relative_path"
+                    return 0
+                else
+                    continue
+                fi
+            done
+            ;;
+        *)
+            local p
+            if p="$(x which "$subcmd")"; then
+                _x_exe "$p" ${1:+"$@"}
+                return
             fi
 
             echo "$p"
@@ -283,6 +280,6 @@ x(){
     esac
 }
 
-if [ ! "$#" = 0 ]; then
-    x "$@"
-fi
+# if [ ! "$#" = 0 ]; then
+#     x "$@"
+# fi
