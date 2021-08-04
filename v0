@@ -71,13 +71,31 @@ _x_guest(){
     esac
 }
 
-_x_exe(){
+_x_exe_local(){
     local filepath="${1:?filepath}"
     if [ -L "$filepath" ]; then
         local target_path
         target_path="$(dirname "$filepath")/$(readlink -f "$filepath")"
         filepath="$(cd "$(dirname "$target_path")" && pwd)/$(basename "$target_path")"
     fi
+
+    # TODO: Hit enter twise will ignore this. But really, should we add this protection?
+    while true; do
+        printf "%s" \
+"=> Running file: $filepath ?
+=> Press y to continue, n to abort. default is y: "
+
+        read action
+        case $action in
+            n|no|nein|ne)  cat >&2 <<A
+=> You could run the file by yourself:
+\033[32m    x \"$filepath\" \033[;0m
+A
+                return 1
+                ;;
+            *)            printf "%s\n" "";     break ;;
+        esac
+    done
 
     shift
     if [ -x "$filepath" ]; then
@@ -104,7 +122,7 @@ _x_exe(){
                     n|no|nein|ne)  cat <<A
 => Sorry. \033[31;1mCANNOT execute an non-executable file \033[0m. 
 => You could grant the permission as following:
-\033[32m    chmod +x \"$fp\" \033[;0m
+\033[32m    chmod +x \"$filepath\" \033[;0m
 A
                         return 1
                         ;;
@@ -140,6 +158,61 @@ _x_run_service(){
     echo "https://kv.x-cmd.com/$filepath"
 }
 
+_x_prepare_src(){
+    local filepath="${1:?filepath}"
+    case "$filepath" in
+        @github/*|@gh/*)             # using github service
+            ;;
+        @gt/*|@gitee/*)             # using github service
+            ;;
+        @x/*)
+            _x_run_service "official/${filepath#@x/}" ;;
+        @*/*)
+            _x_run_service "${filepath#@}"            ;;
+        http://*|https://*) 
+            if [ -z "$NOWARN" ]; then
+                echo "Sourcing script from unknown location: " "$RESOURCE_NAME"
+                cat >&2 <<A
+SECURITY WARNING! Sourcing script from unknown location: $RESOURCE_NAME
+If you confirm this script is secure and want to skip this warning for some purpose, use the following code.
+    > NOWARN=1 x "$filepath" "$@"
+
+A
+                printf "Input yes to continue. Otherwise exit > " >&2
+                local input
+                read input
+
+                if [ "$input" != "yes" ]; then
+                    echo "Exit becaause detect a non yes output: $input" >&2
+                    return 1
+                fi
+            fi
+
+            # TODO: change the BASE64-name
+            TGT="$X_BASH_SRC_PATH/BASE64-URL-$(printf "%s" "$RESOURCE_NAME" | base64 | tr -d '\r\n')"
+            if ! CACHE="$TGT" xrc_curl "$RESOURCE_NAME"; then
+                xrc_log debug "ERROR: Fail to load http resource due to network error or other: $RESOURCE_NAME "
+                return 1
+            fi
+
+            echo "$TGT"
+            return 0
+            ;;
+        *)        
+            local fp
+            if fp=$(x search_path . "$filepath"); then
+                # Slow down? Unknown malicious script. Is it in the whitelist?
+                # - Put it in the whitelist: yes
+                # - Reject: n
+                # - Put this all files in .x-cmd in the whitelist? all
+                _x_exe_local "$fp" ${1:+"$@"}
+            else
+                _x_run_service "$filepath" ${1:+"$@"}
+            fi
+            ;;
+    esac
+}
+
 _x_run(){
     local filepath="${1:?filepath}";
     shift
@@ -152,26 +225,48 @@ _x_run(){
             ;;
         @gt/*|@gitee/*)             # using github service
             ;;
-        @x/*)
+        @x/*|@official/*)
             _x_run_service "official/${filepath#@x/}" ;;
         @*/*)
             _x_run_service "${filepath#@}"            ;;
         http://*|https://*) 
-            # Slow down? 
-            # - Unknown script. May contains malicous code. Is it in the whitelist. SHA512 in the whitelist.
-            # - Unknown script. 
+            if [ -z "$NOWARN" ]; then
+                echo "Sourcing script from unknown location: " "$RESOURCE_NAME"
+                cat >&2 <<A
+SECURITY WARNING! Sourcing script from unknown location: $RESOURCE_NAME
+If you confirm this script is secure and want to skip this warning for some purpose, use the following code.
+    > NOWARN=1 x "$filepath" "$@"
+
+A
+                printf "Input yes to continue. Otherwise exit > " >&2
+                local input
+                read input
+
+                if [ "$input" != "yes" ]; then
+                    echo "Exit becaause detect a non yes output: $input" >&2
+                    return 1
+                fi
+            fi
+
+            # TODO: change the BASE64-name
+            TGT="$X_BASH_SRC_PATH/BASE64-URL-$(printf "%s" "$RESOURCE_NAME" | base64 | tr -d '\r\n')"
+            if ! CACHE="$TGT" xrc_curl "$RESOURCE_NAME"; then
+                xrc_log debug "ERROR: Fail to load http resource due to network error or other: $RESOURCE_NAME "
+                return 1
+            fi
+
+            echo "$TGT"
+            return 0
             ;;
-        # *:*)
-        #     # for ssh
-        #     ;;
+        # *:*)   # for ssh  ;;
         *)        
             local fp
-            if fp=$(_x_uproot_find . "$filepath"); then
+            if fp=$(x search_path . "$filepath"); then
                 # Slow down? Unknown malicious script. Is it in the whitelist?
                 # - Put it in the whitelist: yes
                 # - Reject: n
                 # - Put this all files in .x-cmd in the whitelist? all
-                _x_exe "$fp" ${1:+"$@"}
+                _x_exe_local "$fp" ${1:+"$@"}
             else
                 _x_run_service "$filepath" ${1:+"$@"}
             fi
@@ -224,16 +319,14 @@ x(){
             _x_xrc_run bat   "$@" ;;
         bw)
             _x_xrc_run bw   "$@" ;;
-        exe)
-            _x_exe "$fp" ${1:+"$@"} ;;
         run)
             local fp="$1"; shift 1
             case "$fp" in
-                *.py)       x python "$fp" ${1:+"$@"}   ;;
-                *.rb)       x ruby "$fp" ${1:+"$@"}     ;;
-                *.lua)      x lua "$fp" ${1:+"$@"}      ;;
-                *.ts)       x ts "$fp" ${1:+"$@"}       ;;
-                *)          _x_exe "$fp" ${1:+"$@"}      ;;
+                *.py)       x python            "$fp" ${1:+"$@"}    ;;
+                *.rb)       x ruby              "$fp" ${1:+"$@"}    ;;
+                *.lua)      x lua               "$fp" ${1:+"$@"}    ;;
+                *.ts)       x ts                "$fp" ${1:+"$@"}    ;;
+                *)          _x_exe_local        "$fp" ${1:+"$@"}    ;;
             esac
             ;;
         search_path)
@@ -264,7 +357,7 @@ x(){
         *)
             local p
             if p="$(x which "$subcmd")"; then
-                _x_exe "$p" ${1:+"$@"}
+                _x_exe_local "$p" ${1:+"$@"}
                 return
             fi
 
