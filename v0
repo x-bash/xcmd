@@ -71,7 +71,7 @@ _x_guest(){
     esac
 }
 
-_x_exe_local(){
+_x_exe_workspace(){
     local filepath="${1:?filepath}"
     if [ -L "$filepath" ]; then
         local target_path
@@ -80,22 +80,24 @@ _x_exe_local(){
     fi
 
     # TODO: Hit enter twise will ignore this. But really, should we add this protection?
-    while true; do
-        printf "%s" \
+    if [ -z "$X_DISABLE_WORKSPACE_EXECUTION_CONFIRMATION" ]; then
+        while true; do
+            printf "%s" \
 "=> Running file: $filepath ?
 => Press y to continue, n to abort. default is y: "
 
-        read action
-        case $action in
-            n|no|nein|ne)  cat >&2 <<A
+            read action
+            case $action in
+                n|no|nein|ne)  cat >&2 <<A
 => You could run the file by yourself:
 \033[32m    x \"$filepath\" \033[;0m
 A
-                return 1
-                ;;
-            *)            printf "%s\n" "";     break ;;
-        esac
-    done
+                    return 1
+                    ;;
+                *)            printf "%s\n" "";     break ;;
+            esac
+        done
+    fi
 
     shift
     if [ -x "$filepath" ]; then
@@ -205,7 +207,7 @@ A
                 # - Put it in the whitelist: yes
                 # - Reject: n
                 # - Put this all files in .x-cmd in the whitelist? all
-                _x_exe_local "$fp" ${1:+"$@"}
+                _x_exe_workspace "$fp" ${1:+"$@"}
             else
                 _x_run_service "$filepath" ${1:+"$@"}
             fi
@@ -266,7 +268,7 @@ A
                 # - Put it in the whitelist: yes
                 # - Reject: n
                 # - Put this all files in .x-cmd in the whitelist? all
-                _x_exe_local "$fp" ${1:+"$@"}
+                _x_exe_workspace "$fp" ${1:+"$@"}
             else
                 _x_run_service "$filepath" ${1:+"$@"}
             fi
@@ -326,7 +328,7 @@ x(){
                 *.rb)       x ruby              "$fp" ${1:+"$@"}    ;;
                 *.lua)      x lua               "$fp" ${1:+"$@"}    ;;
                 *.ts)       x ts                "$fp" ${1:+"$@"}    ;;
-                *)          _x_exe_local        "$fp" ${1:+"$@"}    ;;
+                *)          _x_exe_workspace    "$fp" ${1:+"$@"}    ;;
             esac
             ;;
         search_path)
@@ -357,7 +359,7 @@ x(){
         *)
             local p
             if p="$(x which "$subcmd")"; then
-                _x_exe_local "$p" ${1:+"$@"}
+                _x_exe_workspace "$p" ${1:+"$@"}
                 return
             fi
 
