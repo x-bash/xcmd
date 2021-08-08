@@ -280,16 +280,25 @@ x(){
     local subcmd=$1;    shift
     case "$subcmd" in
         rc|src) SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
-        # java | jar);;
-
+        z)  (
+            shift
+            xrc zuz
+            zuz z "$@"
+        )   ;;
+        uz) (
+            shift
+            xrc zuz
+            zuz uz "$@"
+        )   ;;
         ubu|alp|deb|cen|bus) (
-                xrc xdk
-                xdk ${1:+"$@"}
-            ) ;;
+            xrc xdk
+            xdk ${1:+"$@"}
+        ) ;;
         docker|dk|xdk) (
-                xrc xdk
-                xdk ${1:+"$@"}
-            ) ;;
+            xrc xdk
+            xdk ${1:+"$@"}
+        ) ;;
+        # java | jar);;
         python|py)
             # Install python using pyenv
             # xrc pyenv
