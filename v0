@@ -312,9 +312,12 @@ x(){
         lua)
             ;;
         7z)
+            (
+                xrc p7z && p7z ${1:+"$@"}
+            ) ;;
+        7zr)
             ( 
-                xrc p7z
-                p7z ${1:+"$@"}
+                xrc p7zr && p7zr ${1:+"$@"}
             ) ;;
         ps|procs)
             _x_xrc_run procs "$@" ;;
