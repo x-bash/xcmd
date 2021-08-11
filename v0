@@ -311,26 +311,16 @@ x(){
             python "$(_x_official_which "$2")" "$@"     ;;
         lua)
             ;;
-        7z)
-            (
-                xrc p7z && p7z ${1:+"$@"}
-            ) ;;
-        7zr)
-            ( 
-                xrc p7zr && p7zr ${1:+"$@"}
-            ) ;;
-        ps|procs)
-            _x_xrc_run procs "$@" ;;
-        du|dust)
-            _x_xrc_run dust  "$@" ;;
-        ls)
-            _x_xrc_run exa   "$@" ;;
-        ll)
-            x ls -l ${1:+"$@"} ;;
-        bat|cat)
-            _x_xrc_run bat   "$@" ;;
-        bw)
-            _x_xrc_run bw   "$@" ;;
+        7zr)            ( xrc p7zr && p7zr ${1:+"$@"} ) ;;
+        7z)             ( xrc p7z && p7z ${1:+"$@"} ) ;;
+        ls)             _x_xrc_run exa   "$@" ;;
+        ll)             x ls -l ${1:+"$@"} ;;
+
+        ps|procs)       _x_xrc_run procs    "$@" ;;
+        du|dust)        _x_xrc_run dust     "$@" ;;
+        bat|cat)        _x_xrc_run bat      "$@" ;;
+        bw)             _x_xrc_run bw       "$@" ;;
+
         run)
             local fp="$1"; shift 1
             case "$fp" in
