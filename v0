@@ -231,7 +231,7 @@ _x_run(){
             _x_run_service "official/${filepath#@x/}" ;;
         @*/*)
             _x_run_service "${filepath#@}"            ;;
-        http://*|https://*) 
+        http://*|https://*)
             if [ -z "$NOWARN" ]; then
                 echo "Sourcing script from unknown location: " "$RESOURCE_NAME"
                 cat >&2 <<A
