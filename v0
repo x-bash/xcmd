@@ -311,8 +311,8 @@ x(){
             python "$(_x_official_which "$2")" "$@"     ;;
         lua)
             ;;
-        7zr)            ( xrc p7zr && p7zr "$@" ) ;;
-        7z)             ( xrc p7z && p7z "$@" ) ;;
+        7zr)            ( xrc p7zr/v0   &&  p7zr "$@" ) ;;
+        7z)             ( xrc p7z/v0    &&  p7z "$@" ) ;;
         ls)             _x_xrc_run exa   "$@" ;;
         ll)             x ls -l "$@" ;;
 
