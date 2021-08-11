@@ -280,14 +280,8 @@ x(){
     local subcmd=$1;    shift
     case "$subcmd" in
         rc|src) SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
-        z)  (
-            shift
-            xrc zuz && zuz z "$@"
-        )   ;;
-        uz) (
-            shift
-            xrc zuz && zuz uz "$@"
-        )   ;;
+        z)  (   xrc zuz && zuz z "$@"   )   ;;
+        uz) (   xrc zuz && zuz uz "$@" )    ;;
         ubu|alp|deb|cen|bus) (
             xrc xdk
             xdk "$@"
