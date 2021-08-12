@@ -291,13 +291,26 @@ x(){
             xdk "$@"
         ) ;;
         # java | jar);;
+        nvm)
+            xrc nvm/v0
+            nvm "$@"
+        ;;
         python|py)
             # Install python using pyenv
             # xrc pyenv
             python "$(_x_official_which "$2")" "$@"     ;;
         javascript|js)
             # Install node using nvm
-            node "$(_x_official_which "$2")" "$@"       ;;
+            if command -v node 2>/dev/null 1>&2; then
+                node "$(_x_official_which "$2")" "$@"     
+            else
+                (
+                    xrc nvm/v0
+                    nvm install lts/*
+                )
+                nvm run --lts "$@"
+            fi
+        ;;
         typescript|ts)
             # Install node using nvm
             ts-node "$(_x_official_which "$2")" "$@"    ;;
