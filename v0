@@ -276,7 +276,7 @@ A
     esac
 }
 
-_x_nvm_exec(){
+_x_nvm_exec_default(){
     local VERSION=14.17.1
     {
         if ! x nvm which $VERSION; then
@@ -289,17 +289,17 @@ _x_nvm_exec(){
     } 1>/dev/null
 
     eval "
-    _x_nvm_exec(){
+    _x_nvm_exec_default(){
         x nvm exec $VERSION \"\$@\"
     }
     "
 
-    _x_nvm_exec "$@"
+    _x_nvm_exec_default "$@"
 }
 
 _x_node(){
     local nodepath
-    nodepath="$(_x_nvm_exec which node)"
+    nodepath="$(_x_nvm_exec_default which node)"
 
 
     eval "
@@ -311,16 +311,16 @@ _x_node(){
 }
 
 _x_npm(){
-    _x_nvm_exec npm "$@"
+    _x_nvm_exec_default npm "$@"
 }
 
 _x_tsnode(){
 
     {
     local tspath
-    if ! tspath=$(_x_nvm_exec which ts-node); then
+    if ! tspath=$(_x_nvm_exec_default which ts-node); then
         x npm install -g ts-node typescript @types/node || return
-        if ! tspath="$(_x_nvm_exec which ts-node)"; then
+        if ! tspath="$(_x_nvm_exec_default which ts-node)"; then
             xcmd_log warn "ts installation failure."
             return 0
         fi
