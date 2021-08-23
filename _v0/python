@@ -4,7 +4,6 @@ xrc os/v0
 
 _x_python3_path_linux()(
     local MINICONDA_PLATFORM
-
     case "$(os arch)" in
         aarch64)    MINICONDA_PLATFORM=aarch64        ;;
         x64)        MINICONDA_PLATFORM=x64            ;;
@@ -12,27 +11,25 @@ _x_python3_path_linux()(
     esac
 
     local MINICONDA_NAME=Miniconda3-py39_4.10.3-Linux-${MINICONDA_PLATFORM}
+    X_PYTHON_PATH="$X_CMD_SRC_PATH/.bin/x-cmd/python"
 
-     X_PYTHON_PATH="$X_CMD_SRC_PATH/.tmp/x-cmd/python"
-
-    if [ -x "$X_PYTHON_PATH/python" ]; then
-        printf "%s" "$X_PYTHON_PATH"
-        return 0
+    if [ ! -d "$X_PYTHON_PATH/${MINICONDA_NAME}" ]; then
+        mkdir -p "$X_PYTHON_PATH"
+        cd "$X_PYTHON_PATH" || return 1
+        local url="https://repo.anaconda.com/miniconda/"
+        if [ "$XRC_CHINA_NET" -eq 1 ]; then
+            url="https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda"
+        fi
+        if curl --fail --output "${MINICONDA_NAME}.sh" "$url/${MINICONDA_NAME}.sh"; then
+            chmod +x "${MINICONDA_NAME}.sh" &&
+                "./${MINICONDA_NAME}.sh" -b -u -p "./${MINICONDA_NAME}" 1>&2
+            # TODO: remove the file: "${MINICONDA_NAME}.sh"
+        else
+            xcmd_log info "Download failure from $url"
+        fi
     fi
 
-    local build="$X_PYTHON_PATH/build"
-
-    if [ ! -d "$build/${MINICONDA_NAME}" ]; then
-        mkdir -p "$build"
-        cd "$build" || return 1
-        # TODO: CN / Intl
-        # https://repo.anaconda.com/miniconda/
-        curl --output "${MINICONDA_NAME}.sh" "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/${MINICONDA_NAME}.sh"
-        chmod +x "${MINICONDA_NAME}.sh"
-        "./${MINICONDA_NAME}.sh" -b -u -p "./${MINICONDA_NAME}" 1>&2
-    fi
-
-    printf "%s" "$build/${MINICONDA_NAME}/bin"
+    printf "%s" "$X_PYTHON_PATH/${MINICONDA_NAME}/bin"
 )
 
 _x_python3_path(){
