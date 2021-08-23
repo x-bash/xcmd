@@ -32,6 +32,39 @@ _x_python3_path_linux()(
     printf "%s" "$X_PYTHON_PATH/${MINICONDA_NAME}"
 )
 
+_x_python3_path_windows()(
+    local MINICONDA_PLATFORM
+    case "$(os arch)" in
+        aarch64)    MINICONDA_PLATFORM=aarch64        ;;
+        x64)        MINICONDA_PLATFORM=x86_64            ;;
+        *)          return 1 ;;
+    esac
+
+    local MINICONDA_NAME=Miniconda3-py39_4.10.3-Linux-${MINICONDA_PLATFORM}
+    X_PYTHON_PATH="$X_CMD_SRC_PATH/.bin/x-cmd/python"
+    if [ ! -d "$X_PYTHON_PATH/${MINICONDA_NAME}" ]; then
+        mkdir -p "$X_PYTHON_PATH"
+        cd "$X_PYTHON_PATH" || return 1
+        local url="https://repo.anaconda.com/miniconda"
+        if [ "${XRC_CHINA_NET:-0}" -eq 1 ]; then
+            url="https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda"
+        fi
+        if curl --fail --output "${MINICONDA_NAME}.sh" "$url/${MINICONDA_NAME}.exe"; then
+            chmod +x "${MINICONDA_NAME}.sh" &&
+                {
+                    local p
+                    p="$(xrc which x-cmd/_v0/python_bat.bat)"
+                    eval "cmd.exe" "$p"
+                } 1>&2
+            # TODO: remove the file: "${MINICONDA_NAME}.sh"
+        else
+            xcmd_log info "Download failure from $url/${MINICONDA_NAME}.exe"
+        fi
+    fi
+
+    printf "%s" "$X_PYTHON_PATH/${MINICONDA_NAME}"
+)
+
 _x_python3_path(){
     case "$(os name)" in
         linux)
@@ -40,6 +73,14 @@ _x_python3_path(){
                 printf "%s" "$pythonpath"
             else
                 printf "%s" "$(_x_python3_path_linux)/bin/python3"
+            fi
+            ;;
+        windows)
+            local pythonpath
+            if pythonpath=$(command -v python3); then
+                printf "%s" "$pythonpath"
+            else
+                printf "%s" "$(_x_python3_path_windows)/bin/python3"
             fi
             ;;
         darwin)     
