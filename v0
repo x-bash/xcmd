@@ -278,6 +278,7 @@ A
 
 # xrc x-cmd/_v0/node
 . _v0/node
+. _v0/python
 
 x(){
     local subcmd=$1;    shift
@@ -298,10 +299,16 @@ x(){
             xrc nvm/v0
             nvm "$@"
         ;;
-        python|py)
+
+        pip|pip3)
+            _x_pip3 "$@"
+            ;;
+        python|py|python3|py3)
             # Install python using pyenv
             # xrc pyenv
-            python "$(_x_official_which "$2")" "$@"     ;;
+            # _x_python3 "$(_x_official_which "$2")" "$@"     
+            _x_python3 "$@"
+            ;;
         javascript|js)
             # Install node using nvm
             if command -v node 2>/dev/null 1>&2; then

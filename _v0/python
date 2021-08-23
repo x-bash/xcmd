@@ -1,0 +1,81 @@
+# shellcheck shell=sh disable=SC3043
+
+xrc os/v0
+
+_x_python3_path_linux()(
+    X_PYTHON_PATH="$X_CMD_SRC_PATH/.tmp/x-cmd/python"
+
+    if [ -x "$X_PYTHON_PATH/python" ]; then
+        printf "%s" "$X_PYTHON_PATH"
+        return 0
+    fi
+
+    local build="$X_PYTHON_PATH/build"
+
+    local MINICONDA_NAME
+
+    if [ ! -d "$build/${MINICONDA_NAME}" ]; then
+        mkdir -p "$build"
+        cd "$build" || return 1
+        curl --output "${MINICONDA_NAME}.sh" "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/${MINICONDA_NAME}.sh"
+        chmod +x "${MINICONDA_NAME}.sh"
+        "./${MINICONDA_NAME}.sh" -b -u -p "./${MINICONDA_NAME}"
+
+    fi
+
+    printf "%s" "$build/${MINICONDA_NAME}/bin/"
+)
+
+_x_python3_path_mac(){
+    printf "%s" "/usr/bin/python3"
+}
+
+_x_python3_path(){
+    case "$(os name)" in
+        linux)      _x_python3_path_linux ;;
+        darwin)     _x_python3_path_mac ;;
+    esac
+}
+
+_x_python3(){
+    local pythonpath
+    pythonpath="$(_x_python3_path)"
+
+    eval "
+_x_python3(){
+    $(printf "%s" "$pythonpath") \"\$@\" ;
+}"
+
+    _x_python3 "$@"
+}
+
+_x_pip3_path(){
+    case "$(os name)" in
+        linux)
+            local py3path
+            if py3path="$(_x_python3_path_linux)"; then
+                printf "%s" "$py3path/bin/pip3"
+            fi
+            ;;
+        darwin)     
+            printf "%s" "/usr/bin/pip3"
+            ;;
+        win*)
+            ;;
+    esac
+}
+
+_x_pip3(){
+    local rp
+    if rp="$(_x_pip3_path)"; then
+    eval "
+_x_pip3(){
+    $rp \"\$@\"
+}
+"
+    fi
+
+    _x_pip3 "$@"
+
+}
+

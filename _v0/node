@@ -1,0 +1,69 @@
+# shellcheck shell=sh disable=SC3043
+
+
+_x_nvm_exec_default(){
+    local VERSION=14.17.1
+    {
+        if ! x nvm which $VERSION; then
+            if x nvm install $VERSION; then
+                x nvm which $VERSION
+            else
+                return
+            fi
+        fi 
+    } 1>/dev/null
+
+    eval "
+    _x_nvm_exec_default(){
+        x nvm exec $VERSION \"\$@\"
+    }
+    "
+
+    _x_nvm_exec_default "$@"
+}
+
+_x_node(){
+    local nodepath
+    nodepath="$(_x_nvm_exec_default which node)"
+
+
+    eval "
+_x_node(){
+    $(printf "%s" "$nodepath" | tail -n1) \"\$@\" ;
+}"
+
+    _x_node "$@"
+}
+
+_x_npm(){
+    _x_nvm_exec_default npm "$@"
+}
+
+_x_tsnode(){
+
+    {
+    local tspath
+    if ! tspath=$(_x_nvm_exec_default which ts-node); then
+        x npm install -g ts-node typescript @types/node || return
+        if ! tspath="$(_x_nvm_exec_default which ts-node)"; then
+            xcmd_log warn "ts installation failure."
+            return 0
+        fi
+    fi
+
+#     echo "
+# _x_tsnode(){
+#     $(printf "%s" "$tspath" | tail -n1) \"\$@\"
+# }
+#     "
+
+    eval "
+_x_tsnode(){
+    $(printf "%s" "$tspath" | tail -n1) \"\$@\"
+}
+    "
+
+    } 1>/dev/null 2>&1
+
+    _x_tsnode "$@"
+}
