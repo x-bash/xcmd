@@ -35,7 +35,12 @@ _x_python3_path_linux()(
 _x_python3_path(){
     case "$(os name)" in
         linux)
-            printf "%s" "$(_x_python3_path_linux)/python3"
+            local pythonpath
+            if pythonpath=$(command -v python3); then
+                printf "%s" "$pythonpath"
+            else
+                printf "%s" "$(_x_python3_path_linux)/python3"
+            fi
             ;;
         darwin)     
             printf "%s" "/usr/bin/python3"
