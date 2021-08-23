@@ -276,6 +276,73 @@ A
     esac
 }
 
+_x_nvm_exec(){
+    local VERSION=14.17.1
+    {
+        if ! x nvm which $VERSION; then
+            if x nvm install $VERSION; then
+                x nvm which $VERSION
+            else
+                return
+            fi
+        fi 
+    } 1>/dev/null
+
+    eval "
+    _x_nvm_exec(){
+        x nvm exec $VERSION \"\$@\"
+    }
+    "
+
+    _x_nvm_exec "$@"
+}
+
+_x_node(){
+    local nodepath
+    nodepath="$(_x_nvm_exec which node)"
+
+
+    eval "
+_x_node(){
+    $(printf "%s" "$nodepath" | tail -n1) \"\$@\" ;
+}"
+
+    _x_node "$@"
+}
+
+_x_npm(){
+    _x_nvm_exec npm "$@"
+}
+
+_x_tsnode(){
+
+    {
+    local tspath
+    if ! tspath=$(_x_nvm_exec which ts-node); then
+        x npm install -g ts-node typescript @types/node || return
+        if ! tspath="$(_x_nvm_exec which ts-node)"; then
+            xcmd_log warn "ts installation failure."
+            return 0
+        fi
+    fi
+
+#     echo "
+# _x_tsnode(){
+#     $(printf "%s" "$tspath" | tail -n1) \"\$@\"
+# }
+#     "
+
+    eval "
+_x_tsnode(){
+    $(printf "%s" "$tspath" | tail -n1) \"\$@\"
+}
+    "
+
+    } 1>/dev/null 2>&1
+
+    _x_tsnode "$@"
+}
+
 x(){
     local subcmd=$1;    shift
     case "$subcmd" in
@@ -311,11 +378,25 @@ x(){
                 nvm run --lts "$@"
             fi
         ;;
-        typescript|ts)
-            # Install node using nvm
-            ts-node "$(_x_official_which "$2")" "$@"    ;;
+        npm)        _x_npm "$@" ;;
+        node)       _x_node "$@" ;;
+        ts)
+            local arg
+            local argstr
+            while [ $# -ge 0 ]; do
+                case "$arg" in
+                    -*)     argstr="$argstr $arg"   ;;
+                    *)      break
+                esac
+            done
+            local script
+            # script="$(_x_official_which "$1")"
+            script="$1"
+            shift
+            eval _x_tsnode "$argstr" "$script" "$@"
+            ;;
         ruby|rb)
-            python "$(_x_official_which "$2")" "$@"     ;;
+            ruby "$(_x_official_which "$2")" "$@"     ;;
         lua)
             ;;
         7zr)            ( xrc p7zr/v0   &&  p7zr "$@" ) ;;
