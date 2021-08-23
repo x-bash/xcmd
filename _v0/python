@@ -32,17 +32,17 @@ _x_python3_path_linux()(
         "./${MINICONDA_NAME}.sh" -b -u -p "./${MINICONDA_NAME}" 1>&2
     fi
 
-    printf "%s" "$build/${MINICONDA_NAME}/bin/"
+    printf "%s" "$build/${MINICONDA_NAME}/bin"
 )
-
-_x_python3_path_mac(){
-    printf "%s" "/usr/bin/python3"
-}
 
 _x_python3_path(){
     case "$(os name)" in
-        linux)      _x_python3_path_linux ;;
-        darwin)     _x_python3_path_mac ;;
+        linux)
+            printf "%s" "$(_x_python3_path_linux)/python3"
+            ;;
+        darwin)     
+            printf "%s" "/usr/bin/python3"
+            ;;
     esac
 }
 
