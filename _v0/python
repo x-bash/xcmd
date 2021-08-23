@@ -3,7 +3,17 @@
 xrc os/v0
 
 _x_python3_path_linux()(
-    X_PYTHON_PATH="$X_CMD_SRC_PATH/.tmp/x-cmd/python"
+    local MINICONDA_PLATFORM
+
+    case "$(os arch)" in
+        aarch64)    MINICONDA_PLATFORM=aarch64        ;;
+        x64)        MINICONDA_PLATFORM=x64            ;;
+        *)          return 1 ;;
+    esac
+
+    local MINICONDA_NAME=Miniconda3-py39_4.10.3-Linux-${MINICONDA_PLATFORM}
+
+     X_PYTHON_PATH="$X_CMD_SRC_PATH/.tmp/x-cmd/python"
 
     if [ -x "$X_PYTHON_PATH/python" ]; then
         printf "%s" "$X_PYTHON_PATH"
@@ -12,15 +22,14 @@ _x_python3_path_linux()(
 
     local build="$X_PYTHON_PATH/build"
 
-    local MINICONDA_NAME
-
     if [ ! -d "$build/${MINICONDA_NAME}" ]; then
         mkdir -p "$build"
         cd "$build" || return 1
+        # TODO: CN / Intl
+        # https://repo.anaconda.com/miniconda/
         curl --output "${MINICONDA_NAME}.sh" "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/${MINICONDA_NAME}.sh"
         chmod +x "${MINICONDA_NAME}.sh"
-        "./${MINICONDA_NAME}.sh" -b -u -p "./${MINICONDA_NAME}"
-
+        "./${MINICONDA_NAME}.sh" -b -u -p "./${MINICONDA_NAME}" 1>&2
     fi
 
     printf "%s" "$build/${MINICONDA_NAME}/bin/"
