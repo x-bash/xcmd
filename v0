@@ -276,9 +276,10 @@ A
     esac
 }
 
-# xrc x-cmd/_v0/node
-. _v0/node
-. _v0/python
+xrc x-cmd/_v0/node
+xrc x-cmd/_v0/python
+# . _v0/node
+# . _v0/python
 
 x(){
     local subcmd=$1;    shift
