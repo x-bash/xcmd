@@ -310,20 +310,20 @@ x(){
             # _x_python3 "$(_x_official_which "$2")" "$@"     
             _x_python3 "$@"
             ;;
-        javascript|js)
-            # Install node using nvm
-            if command -v node 2>/dev/null 1>&2; then
-                node "$(_x_official_which "$2")" "$@"     
-            else
-                (
-                    xrc nvm/v0
-                    nvm install lts/*
-                )
-                nvm run --lts "$@"
-            fi
-        ;;
+        javascript|js|node)
+            _x_node "$@"
+            # # Install node using nvm
+            # if command -v node 2>/dev/null 1>&2; then
+            #     node "$(_x_official_which "$2")" "$@"     
+            # else
+            #     (
+            #         xrc nvm/v0
+            #         nvm install lts/*
+            #     )
+            #     nvm run --lts "$@"
+            # fi
+            ;;
         npm)        _x_npm "$@" ;;
-        node)       _x_node "$@" ;;
         ts)
             local arg
             local argstr
