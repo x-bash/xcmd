@@ -158,7 +158,7 @@ _x_python3(){
             if ! xfp="$(xrc which "$FP")"; then
                 return
             fi
-            echo _x_python3_bin "$S1" "\"\$xfp\"" "$S2" 
+            eval _x_python3_bin "$S1" "\"\$xfp\"" "$S2" 
             ;;
         126)        
             _x_python3_bin "$@"
