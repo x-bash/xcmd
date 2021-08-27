@@ -8,6 +8,9 @@ function addnow(arg){
     now = now " " wrap(arg)
 }
 
+function print_code(varname, value){
+    print( varname "=" wrap(value) )
+}
 
 function revert(a){
     gsub("\004", "\n", a)
@@ -166,34 +169,39 @@ BEGIN {
             addnow( elem )
             str1 = now
             now = ""
-            continue
-        }
-
-        # Just pass through
-        if ( (elem == "-c") && (elem == "-m") ){
-            i = i + 1
-            elem = revert( arg_arr[i] )
             exit(126)       # No path substitution
         }
 
-        # Add to the first part
-        if ((elem == "-Q") || (elem == "-W")) {
-            addnow( elem )
-            i = i + 1
-            elem = revert( arg_arr[i] )
-            addnow( elem )
-        }
+        if (option(elem) ~ /^-/) {
 
-        if (elem ~ /^-/) {
-            letter=substr(elem, 2)
-            if ( index(letter, "bBdEhiORsStuvx3") >= 0 ) {
+            if ( elem ~ /^-[^=]+=/ ) {
+                addnow( elem )
+
+                gsub(/=[^$]$/, "", elem)
+                if ( option[elem] != 1) {
+                    panic_error("Expect to be an option")
+                }
                 continue
-            } else {
-                panic_error("Very wrong")
             }
+
+            if ( option[elem] == 1) {
+                addnow( elem )
+                i = i+1
+                elem = revert( arg_arr[i] )
+                addnow( elem )
+                continue
+            }
+
+            if ( flag[elem] == 1) {
+                addnow( elem )
+                continue
+            }
+
+            panic_error("Expect to be an option or flag")
         } else {
             if (str1 == 0) {
-                addnow( elem )
+                print_code( "FP", elem )
+
                 str1 = now
                 now = ""
             } else {
@@ -204,5 +212,7 @@ BEGIN {
     }
 
     str2 = now
+    print_code( "S1", str1 )
+    print_code( "S2", str2 )
 }
 

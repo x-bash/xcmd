@@ -4,6 +4,13 @@ BEGIN{
     now=""
 }
 
+function addnow(arg){
+    now = now " " wrap(arg)
+}
+
+function print_code(varname, value){
+    print( varname "=" wrap(value) )
+}
 
 function revert(a){
     gsub("\004", "\n", a)
@@ -34,12 +41,12 @@ function panic_error(msg){
         elem = revert( arg_arr[i] )
 
         if (str1 != 0) {
-            now = now " " elem
+            addnow( elem )
             continue
         }
 
         if (elem == -) {
-            now = now " " elem
+            addnow( elem )
             exit(126)       # No path substitution
         }
 
@@ -52,28 +59,30 @@ function panic_error(msg){
 
         # Add to the first part
         if ((elem == "-Q") || (elem == "-W")) {
-            now = now " " elem
+            addnow( elem )
             i = i + 1
             elem = revert( arg_arr[i] )
-            now = now " " elem
+            addnow( elem )
             continue
         }
 
         if (elem == "-OO") {
-            now = now " " elem
+            addnow( elem )
             continue
         }
 
         if (elem ~ /^-/) {
             letter=substr(elem, 2)
             if ( index(letter, "bBdEhiORsStuvx3") >= 0 ) {
-                now = now " " elem
+                addnow( elem )
                 continue
             } else {
                 panic_error("Very wrong")
             }
         } else {
             if (str1 == 0) {
+                print_code( "FP", elem )
+
                 str1 = now
                 now = ""
             } else {
@@ -84,5 +93,7 @@ function panic_error(msg){
     }
 
     str2 = now
+    print_code( "S1", str1 )
+    print_code( "S2", str2 )
 }
 
