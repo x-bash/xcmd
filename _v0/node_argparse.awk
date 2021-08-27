@@ -2,7 +2,7 @@ BEGIN{
     str1=0
     str2=""
     now=""
-    RS=0
+    RS="\001"
 }
 
 function addnow(arg){
@@ -154,6 +154,7 @@ BEGIN {
 }
 
 {
+    gsub("\n$", "", $0)
     gsub("\n", "\004", $0)
     arg_arr_len = split($0, arg_arr, ARG_SEP)
 
@@ -165,22 +166,19 @@ BEGIN {
             continue
         }
 
-        if (elem == -) {
-            addnow( elem )
+        if (elem == "-") {
+            addnow_nowrap( elem )
             exit(126)       # No path substitution
         }
 
-        if ( (elem == "--eval") && (elem == "-e") ) {
-            addnow( elem )
-            str1 = now
-            now = ""
+        if ( (elem == "--eval") || (elem == "-e") ) {
             exit(126)       # No path substitution
         }
 
-        if (option(elem) ~ /^-/) {
+        if (elem ~ /^-/) {
 
             if ( elem ~ /^-[^=]+=/ ) {
-                addnow( elem )
+                addnow_nowrap( elem )
 
                 gsub(/=[^$]$/, "", elem)
                 if ( option[elem] != 1) {
@@ -190,7 +188,7 @@ BEGIN {
             }
 
             if ( option[elem] == 1) {
-                addnow( elem )
+                addnow_nowrap( elem )
                 i = i+1
                 elem = revert( arg_arr[i] )
                 addnow( elem )
@@ -198,7 +196,7 @@ BEGIN {
             }
 
             if ( flag[elem] == 1) {
-                addnow( elem )
+                addnow_nowrap( elem )
                 continue
             }
 

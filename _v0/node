@@ -35,17 +35,17 @@ _x_nvm_exec_default(){
     _x_nvm_exec_default "$@"
 }
 
-_x_node(){
+_x_node_bin(){
     local nodepath
     nodepath="$(_x_nvm_exec_default which node)"
 
 
     eval "
-_x_node(){
+_x_node_bin(){
     $(printf "%s" "$nodepath" | tail -n1) \"\$@\" ;
 }"
 
-    _x_node "$@"
+    _x_node_bin "$@"
 }
 
 _x_npm(){
@@ -79,4 +79,39 @@ _x_tsnode(){
     } 1>/dev/null 2>&1
 
     _x_tsnode "$@"
+}
+
+_x_node_arg(){
+    local IFS
+    IFS="$(printf "\034")"
+    local all="$*"
+
+    local p
+    # p="$(xrc which x-cmd/_v0/python_argparse.awk)"
+    p="$(xrc which ./_v0/node_argparse.awk)"
+    
+    awk \
+        -v ARG_SEP="$IFS" \
+        -f "$p" <<A
+$all
+A
+
+}
+
+_x_node(){
+    local code
+    code="$(_x_node_arg "$@")"
+    case $? in
+        0)       
+            eval "$code"
+            if ! xfp="$(xrc which "$FP")"; then
+                return
+            fi
+            eval _x_node_bin "$S1" "\"\$xfp\"" "$S2" 
+            ;;
+        126)        
+            _x_node_bin "$@"
+            ;;
+    esac
+
 }

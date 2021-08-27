@@ -99,7 +99,7 @@ _x_python3_bin(){
     $(printf "%s" "$pythonpath") \"\$@\" ;
 }"
 
-    _x_python3 "$@"
+    _x_python3_bin "$@"
 }
 
 _x_pip3_path(){
