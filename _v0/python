@@ -132,3 +132,27 @@ _x_pip3(){
 
 }
 
+_python_arg(){
+    local IFS
+    IFS="$(printf "\001")"
+    local all="$*"
+
+    local p
+    # p="$(xrc which x-cmd/_v0/python_argparse.awk)"
+    p="$(xrc which ./_v0/python_argparse.awk)"
+    
+    local code
+    code="$(awk \
+        -v ARG_SEP="$IFS" \
+        -f "$p" <<A
+$all
+A
+)"
+    echo $?
+
+    echo "$code"
+
+}
+
+
+_python_arg -W aaa -O a.py "a  c" b c

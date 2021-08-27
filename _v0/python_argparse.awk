@@ -2,6 +2,7 @@ BEGIN{
     str1=0
     str2=""
     now=""
+    RS=0
 }
 
 function addnow(arg){
@@ -9,7 +10,7 @@ function addnow(arg){
 }
 
 function print_code(varname, value){
-    print( varname "=" wrap(value) )
+    print( "local " varname "=" wrap(value) )
 }
 
 function revert(a){
@@ -37,15 +38,16 @@ function panic_error(msg){
     gsub("\n", "\004", $0)
     arg_arr_len = split($0, arg_arr, ARG_SEP)
 
-    for (i=1; i<arg_arr_len; ++i) {
+    for (i=1; i<=arg_arr_len; ++i) {
         elem = revert( arg_arr[i] )
+        print elem > "/dev/stderr"
 
         if (str1 != 0) {
             addnow( elem )
             continue
         }
 
-        if (elem == -) {
+        if (elem == "-") {
             addnow( elem )
             exit(126)       # No path substitution
         }

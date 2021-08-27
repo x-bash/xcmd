@@ -2,6 +2,7 @@ BEGIN{
     str1=0
     str2=""
     now=""
+    RS=0
 }
 
 function addnow(arg){
@@ -152,7 +153,7 @@ BEGIN {
     gsub("\n", "\004", $0)
     arg_arr_len = split($0, arg_arr, ARG_SEP)
 
-    for (i=1; i<arg_arr_len; ++i) {
+    for (i=1; i<=arg_arr_len; ++i) {
         elem = revert( arg_arr[i] )
 
         if (str1 != 0) {
