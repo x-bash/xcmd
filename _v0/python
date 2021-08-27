@@ -90,12 +90,12 @@ _x_python3_path(){
     esac
 }
 
-_x_python3(){
+_x_python3_bin(){
     local pythonpath
     pythonpath="$(_x_python3_path)"
 
     eval "
-_x_python3(){
+_x_python3_bin(){
     $(printf "%s" "$pythonpath") \"\$@\" ;
 }"
 
@@ -134,25 +134,40 @@ _x_pip3(){
 
 _python_arg(){
     local IFS
-    IFS="$(printf "\001")"
+    IFS="$(printf "\034")"
     local all="$*"
 
     local p
     # p="$(xrc which x-cmd/_v0/python_argparse.awk)"
     p="$(xrc which ./_v0/python_argparse.awk)"
     
-    local code
-    code="$(awk \
+    awk \
         -v ARG_SEP="$IFS" \
         -f "$p" <<A
 $all
 A
-)"
-    echo $?
 
-    echo "$code"
+}
+
+_x_python3(){
+    local code
+    code="$(_python_arg "$@")"
+    case $? in
+        0)       
+            eval "$code"
+            if ! xfp="$(xrc which "$FP")"; then
+                return
+            fi
+            echo _x_python3_bin "$S1" "\"\$xfp\"" "$S2" 
+            ;;
+        126)        
+            _x_python3_bin "$@"
+            ;;
+    esac
 
 }
 
 
-_python_arg -W aaa -O a.py "a  c" b c
+# _python_arg -W aaa -O a.py "a  c" b c
+
+# _python_arg -m mod

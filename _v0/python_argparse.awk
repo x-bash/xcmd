@@ -2,11 +2,15 @@ BEGIN{
     str1=0
     str2=""
     now=""
-    RS=0
+    RS="\001"
 }
 
 function addnow(arg){
     now = now " " wrap(arg)
+}
+
+function addnow_nowrap(arg){
+    now = now " " arg
 }
 
 function print_code(varname, value){
@@ -35,12 +39,12 @@ function panic_error(msg){
 
 
 {
+    gsub("\n$", "", $0)
     gsub("\n", "\004", $0)
     arg_arr_len = split($0, arg_arr, ARG_SEP)
 
     for (i=1; i<=arg_arr_len; ++i) {
         elem = revert( arg_arr[i] )
-        print elem > "/dev/stderr"
 
         if (str1 != 0) {
             addnow( elem )
@@ -48,12 +52,12 @@ function panic_error(msg){
         }
 
         if (elem == "-") {
-            addnow( elem )
+            addnow_nowrap( elem )
             exit(126)       # No path substitution
         }
 
         # Just pass through
-        if ( (elem == "-c") && (elem == "-m") ){
+        if ( (elem == "-c") || (elem == "-m") ){
             i = i + 1
             elem = revert( arg_arr[i] )
             exit(126)       # No path substitution
@@ -61,7 +65,7 @@ function panic_error(msg){
 
         # Add to the first part
         if ((elem == "-Q") || (elem == "-W")) {
-            addnow( elem )
+            addnow_nowrap( elem )
             i = i + 1
             elem = revert( arg_arr[i] )
             addnow( elem )
@@ -69,14 +73,14 @@ function panic_error(msg){
         }
 
         if (elem == "-OO") {
-            addnow( elem )
+            addnow_nowrap( elem )
             continue
         }
 
         if (elem ~ /^-/) {
             letter=substr(elem, 2)
             if ( index(letter, "bBdEhiORsStuvx3") >= 0 ) {
-                addnow( elem )
+                addnow_nowrap( elem )
                 continue
             } else {
                 panic_error("Very wrong")

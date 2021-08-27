@@ -9,6 +9,10 @@ function addnow(arg){
     now = now " " wrap(arg)
 }
 
+function addnow_nowrap(arg){
+    now = now " " arg
+}
+
 function print_code(varname, value){
     print( varname "=" wrap(value) )
 }

@@ -337,7 +337,7 @@ x(){
             # script="$(_x_official_which "$1")"
             script="$1"
             shift
-            eval _x_tsnode "$argstr" "$script" "$@"
+            eval 民 "$argstr" "$script" "$@"
             ;;
         ruby|rb)
             ruby "$(_x_official_which "$2")" "$@"     ;;
