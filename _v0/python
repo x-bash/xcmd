@@ -6,7 +6,7 @@ _x_python3_path_linux()(
     local MINICONDA_PLATFORM
     case "$(os arch)" in
         aarch64)    MINICONDA_PLATFORM=aarch64        ;;
-        x64)        MINICONDA_PLATFORM=x86_64            ;;
+        x64)        MINICONDA_PLATFORM=x86_64         ;;
         arm64)      MINICONDA_PLATFORM=aarch64        ;;
         *)          return 1 ;;
     esac
