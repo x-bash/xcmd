@@ -109,7 +109,7 @@ _x_node(){
             fi
             eval _x_node_bin "$S1" "\"\$xfp\"" "$S2" 
             ;;
-        126)        
+        126)
             _x_node_bin "$@"
             ;;
     esac
