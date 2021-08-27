@@ -3,6 +3,7 @@
     "files.associations": {
         "*.json": "json",
         "*.md": "markdown",
+        "*.awk": "awk",
         "*": "shellscript",
     }
 }
