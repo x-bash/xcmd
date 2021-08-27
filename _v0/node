@@ -23,7 +23,7 @@ _x_nvm_exec_default(){
             else
                 return
             fi
-        fi 
+        fi
     } 1>/dev/null
 
     eval "
@@ -89,7 +89,7 @@ _x_node_arg(){
     local p
     # p="$(xrc which x-cmd/_v0/python_argparse.awk)"
     p="$(xrc which ./_v0/node_argparse.awk)"
-    
+
     awk \
         -v ARG_SEP="$IFS" \
         -f "$p" <<A
@@ -102,12 +102,12 @@ _x_node(){
     local code
     code="$(_x_node_arg "$@")"
     case $? in
-        0)       
+        0)
             eval "$code"
             if ! xfp="$(xrc which "$FP")"; then
                 return
             fi
-            eval _x_node_bin "$S1" "\"\$xfp\"" "$S2" 
+            eval _x_node_bin "$S1" "\"\$xfp\"" "$S2"
             ;;
         126)
             _x_node_bin "$@"
