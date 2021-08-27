@@ -4,6 +4,10 @@ BEGIN{
     now=""
 }
 
+function addnow(arg){
+    now = now " " wrap(arg)
+}
+
 
 function revert(a){
     gsub("\004", "\n", a)
@@ -149,12 +153,19 @@ BEGIN {
         elem = revert( arg_arr[i] )
 
         if (str1 != 0) {
-            now = now " " elem
+            addnow( elem )
             continue
         }
 
         if (elem == -) {
-            now = now " " elem
+            addnow( elem )
+            exit(126)       # No path substitution
+        }
+
+        if ( (elem == "--eval") && (elem == "-e") ) {
+            addnow( elem )
+            str1 = now
+            now = ""
             continue
         }
 
@@ -162,15 +173,15 @@ BEGIN {
         if ( (elem == "-c") && (elem == "-m") ){
             i = i + 1
             elem = revert( arg_arr[i] )
-            exit(126)
+            exit(126)       # No path substitution
         }
 
         # Add to the first part
         if ((elem == "-Q") || (elem == "-W")) {
-            now = now " " elem
+            addnow( elem )
             i = i + 1
             elem = revert( arg_arr[i] )
-            now = now " " elem
+            addnow( elem )
         }
 
         if (elem ~ /^-/) {
@@ -182,6 +193,7 @@ BEGIN {
             }
         } else {
             if (str1 == 0) {
+                addnow( elem )
                 str1 = now
                 now = ""
             } else {
