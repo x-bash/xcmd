@@ -138,8 +138,8 @@ _python_arg(){
     local all="$*"
 
     local p
-    # p="$(xrc which x-cmd/_v0/python_argparse.awk)"
-    p="$(xrc which ./_v0/python_argparse.awk)"
+    p="$(xrc which x-cmd/_v0/python_argparse.awk)"
+    # p="$(xrc which ./_v0/python_argparse.awk)"
     
     awk \
         -v ARG_SEP="$IFS" \
