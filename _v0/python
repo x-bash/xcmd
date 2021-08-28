@@ -63,7 +63,7 @@ _x_python3_path_windows()(
         fi
     fi
 
-    printf "%s" "$X_PYTHON_PATH/${MINICONDA_NAME}"
+    printf "%s" "$X_PYTHON_PATH/Miniconda"
 )
 
 _x_python3_path(){
