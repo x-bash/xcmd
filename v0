@@ -7,6 +7,25 @@ _x_mirror(){
     "https://x-cmd.gitee.io/x-official"
 }
 
+___x_readlink_recursive(){
+    if [ -L "${1:?Provide link}" ]; then
+        local next_link
+        next_link="$(readlink "${1}")" || return
+        ___x_readlink_recursive "$next_link"
+    else
+        [ ! -e "${1}" ] || return 1        # File Not Exists
+        printf "%s" "$1"
+    fi
+}
+
+___x_readlink_recursive(){
+    local next_link
+    next_link="$(readlink "${1:?Provide link}")" && ___x_readlink_recursive "$next_link" && return
+    [ -L "$1" ] && return 1     # Invalid link
+    [ -e "$1" ] && printf "%s" "$1" && return 0
+    return 1    # File not exists
+}
+
 # TODO: optimization. Consider sharing the big binary in a common folder.
 # But that will introduce risk.
 # How? 
