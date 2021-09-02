@@ -11,9 +11,12 @@ ___x_readlink_recursive(){
     if [ -L "${1:?Provide link}" ]; then
         local next_link
         next_link="$(readlink "${1}")" || return
-        ___x_readlink_recursive "$next_link"
+        if [ "${next_link#/}" = "$next_link" ]; then
+            next_link="$(dirname "${1}")/$next_link"
+        fi
+        ___x_readlink_recursive "$next_link" 
     else
-        [ ! -e "${1}" ] || return 1        # File Not Exists
+        [ ! -e "${1}" ] && return 1        # File Not Exists
         printf "%s" "$1"
     fi
 }
@@ -87,8 +90,14 @@ _x_exe_workspace(){
     local filepath="${1:?filepath}"
     if [ -L "$filepath" ]; then
         local target_path
-        target_path="$(dirname "$filepath")/$(readlink -f "$filepath")"
-        filepath="$(cd "$(dirname "$target_path")" && pwd)/$(basename "$target_path")"
+        target_path="$(___x_readlink_recursive "$filepath")"
+
+        # $(dirname "$filepath")/
+        if [ "${target_path#/}" = "${target_path}" ]; then
+            filepath="$(cd "$(dirname "$target_path")" && pwd)/$(basename "$target_path")"
+        else
+            filepath="$target_path"
+        fi
     fi
 
     # TODO: Hit enter twise will ignore this. But really, should we add this protection?
@@ -96,7 +105,7 @@ _x_exe_workspace(){
         while true; do
             printf "%s" \
 "=> Running file: $filepath ?
-=> Press y to continue, n to abort. default is y: "
+=> Enter or press y to continue, n to abort. default is y: "
 
             read action
             case $action in
@@ -106,7 +115,7 @@ _x_exe_workspace(){
 A
                     return 1
                     ;;
-                *)            printf "%s\n" "";     break ;;
+                ""|y)            printf "%s\n" "";     break ;;
             esac
         done
     fi
