@@ -86,18 +86,23 @@ _x_guest(){
     esac
 }
 
+___x_abspath(){
+    local target_path="${1:-Please provide path}"
+    # $(dirname "$filepath")/
+    if [ "${target_path#/}" = "${target_path}" ]; then
+        printf "%s" "$(cd "$(dirname "$target_path")" && pwd)/$(basename "$target_path")"
+    else
+        printf "%s" "$target_path"
+    fi
+}
+
+
 _x_exe_workspace(){
     local filepath="${1:?filepath}"
     if [ -L "$filepath" ]; then
         local target_path
         target_path="$(___x_readlink_recursive "$filepath")"
-
-        # $(dirname "$filepath")/
-        if [ "${target_path#/}" = "${target_path}" ]; then
-            filepath="$(cd "$(dirname "$target_path")" && pwd)/$(basename "$target_path")"
-        else
-            filepath="$target_path"
-        fi
+        target_path="$(___x_abspath "$target_path")"
     fi
 
     # TODO: Hit enter twise will ignore this. But really, should we add this protection?
