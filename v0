@@ -14,7 +14,7 @@ ___x_readlink_recursive(){
         if [ "${next_link#/}" = "$next_link" ]; then
             next_link="$(dirname "${1}")/$next_link"
         fi
-        ___x_readlink_recursive "$next_link" 
+        ___x_readlink_recursive "$next_link"
     else
         [ ! -e "${1}" ] && return 1        # File Not Exists
         printf "%s" "$1"
@@ -24,7 +24,7 @@ ___x_readlink_recursive(){
 
 # TODO: optimization. Consider sharing the big binary in a common folder.
 # But that will introduce risk.
-# How? 
+# How?
 # 1. Local user $HOME/.x-cmd
 # 2. Global sharing folder.
 # Consider using the sha512 to calculate the file hash for this purpose.
@@ -68,7 +68,7 @@ _x_xrc_static_run(){
 
 # xenv go in
 # xenv j in
-# xenv 
+# xenv
 
 _x_header(){
     local filepath="${1:?filepath}"; shift
@@ -155,7 +155,7 @@ A
                 read action
                 case $action in
                     n|no|nein|ne)  cat <<A
-=> Sorry. \033[31;1mCANNOT execute an non-executable file \033[0m. 
+=> Sorry. \033[31;1mCANNOT execute an non-executable file \033[0m.
 => You could grant the permission as following:
 \033[32m    chmod +x \"$filepath\" \033[;0m
 A
@@ -204,7 +204,7 @@ _x_prepare_src(){
             _x_run_service "official/${filepath#@x/}" ;;
         @*/*)
             _x_run_service "${filepath#@}"            ;;
-        http://*|https://*) 
+        http://*|https://*)
             if [ -z "$NOWARN" ]; then
                 echo "Sourcing script from unknown location: " "$RESOURCE_NAME"
                 cat >&2 <<A
@@ -233,7 +233,7 @@ A
             echo "$TGT"
             return 0
             ;;
-        *)        
+        *)
             local fp
             if fp=$(x search_path . "$filepath"); then
                 # Slow down? Unknown malicious script. Is it in the whitelist?
@@ -294,7 +294,7 @@ A
             return 0
             ;;
         # *:*)   # for ssh  ;;
-        *)        
+        *)
             local fp
             if fp=$(x search_path . "$filepath"); then
                 # Slow down? Unknown malicious script. Is it in the whitelist?
@@ -312,7 +312,7 @@ A
 
 # Section : utilties
 xrc static-build
-    
+
 ___x_jq(){
     static_build_init jq jq ___x_jq && ___x_jq "$@"
 }
@@ -370,14 +370,14 @@ x(){
         python|py|python3|py3)
             # Install python using pyenv
             # xrc pyenv
-            # _x_python3 "$(_x_official_which "$2")" "$@"     
+            # _x_python3 "$(_x_official_which "$2")" "$@"
             _x_python3 "$@"
             ;;
         javascript|js|node)
             _x_node "$@"
             # # Install node using nvm
             # if command -v node 2>/dev/null 1>&2; then
-            #     node "$(_x_official_which "$2")" "$@"     
+            #     node "$(_x_official_which "$2")" "$@"
             # else
             #     (
             #         xrc nvm/v0
