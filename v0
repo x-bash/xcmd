@@ -310,7 +310,7 @@ A
 }
 
 
-# Section : utilties
+# Section : utilties in static-build
 xrc static-build
 
 ___x_jq(){
