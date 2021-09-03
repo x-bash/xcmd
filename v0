@@ -51,19 +51,6 @@ A
 
 }
 
-_x_xrc_run()(
-    local name=$1;  shift
-    xrc "$name"
-    $name "$@"
-)
-
-_x_xrc_static_run(){
-    local name=$1;  shift
-    xrc static-build
-    static_build_xrc "$name"
-    "_${name}_bin" "$@"
-}
-
 # x py install/cdn
 
 # xenv go in
@@ -313,6 +300,19 @@ A
 # Section : utilties in static-build
 xrc static-build
 
+# _x_xrc_run()(
+#     local name=$1;  shift
+#     xrc "$name"
+#     $name "$@"
+# )
+
+# _x_xrc_static_run(){
+#     local name=$1;  shift
+#     xrc static-build
+#     static_build_xrc "$name"
+#     "_${name}_bin" "$@"
+# }
+
 ___x_jq(){
     static_build_init jq jq ___x_jq && ___x_jq          "$@"
 }
@@ -329,8 +329,8 @@ ___x_dust(){
     static_build_init dust dust ___x_dust && ___x_dust  "$@"
 }
 
-___x_proc(){
-    static_build_init proc proc ___x_proc && ___x_proc  "$@"
+___x_procs(){
+    static_build_init procs procs ___x_procs && ___x_procs  "$@"
 }
 
 ___x_bat(){
@@ -454,7 +454,3 @@ x(){
             # "$X_CMD_PATH" "$@"  ;;
     esac
 }
-
-# if [ ! "$#" = 0 ]; then
-#     x "$@"
-# fi
