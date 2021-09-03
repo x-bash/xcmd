@@ -2,11 +2,6 @@
 
 xrc log init xcmd
 
-_x_mirror(){
-    "https://x-cmd.github.io/x-official"
-    "https://x-cmd.gitee.io/x-official"
-}
-
 ___x_readlink_recursive(){
     if [ -L "${1:?Provide link}" ]; then
         local next_link
@@ -21,6 +16,13 @@ ___x_readlink_recursive(){
     fi
 }
 
+
+# Section : Unfinissh _x_official_which
+
+_x_mirror(){
+    "https://x-cmd.github.io/x-official"
+    "https://x-cmd.gitee.io/x-official"
+}
 
 # TODO: optimization. Consider sharing the big binary in a common folder.
 # But that will introduce risk.
@@ -50,6 +52,10 @@ A
     fi
 
 }
+
+# EndSection
+
+# Section : Utitilies
 
 # x py install/cdn
 
@@ -90,6 +96,9 @@ ___x_abspath(){
     fi
 }
 
+# EndSection
+
+# Section : Find And Execute at .x-cmd folder
 
 _x_exe_workspace(){
     local filepath="${1:?filepath}"
@@ -174,6 +183,7 @@ A
 
 }
 
+# EndSection
 
 _x_run_service(){
     local filepath="${1:?filepath}"
@@ -339,10 +349,17 @@ ___x_bat(){
 
 # EndSection
 
+
+# Section : Runtime
 xrc x-cmd/_v0/node
 xrc x-cmd/_v0/python
 # . _v0/node
 # . _v0/python
+
+# EndSection
+
+
+# Section : X main function
 
 x(){
     local subcmd=$1;    shift
@@ -454,3 +471,5 @@ x(){
             # "$X_CMD_PATH" "$@"  ;;
     esac
 }
+
+# EndSection
