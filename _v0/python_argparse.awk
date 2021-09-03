@@ -79,7 +79,7 @@ function panic_error(msg){
 
         if (elem ~ /^-/) {
             letter=substr(elem, 2)
-            if ( index(letter, "bBdEhiORsStuvx3") >= 0 ) {
+            if ( index(letter, "bBdEhiORsStuvx3") > 0 ) {
                 addnow_nowrap( elem )
                 continue
             } else {
