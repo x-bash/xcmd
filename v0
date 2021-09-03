@@ -42,6 +42,13 @@ _x_xrc_run()(
     $name "$@"
 )
 
+_x_xrc_static_run(){
+    local name=$1;  shift
+    xrc static-build
+    static_build_xrc "$name"
+    "_${name}_bin" "$@"
+}
+
 # x py install/cdn
 
 # xenv go in
@@ -348,10 +355,11 @@ x(){
         ls)             _x_xrc_run exa   "$@" ;;
         ll)             x ls -l "$@" ;;
 
-        ps|procs)       _x_xrc_run procs    "$@" ;;
-        du|dust)        _x_xrc_run dust     "$@" ;;
-        bat|cat)        _x_xrc_run bat      "$@" ;;
-        bw)             _x_xrc_run bw       "$@" ;;
+        ps|procs)       _x_xrc_run procs        "$@" ;;
+        du|dust)        _x_xrc_run dust         "$@" ;;
+        bat|cat)        _x_xrc_run bat          "$@" ;;
+        bw)             _x_xrc_run bw           "$@" ;;
+        jq)             _x_xrc_static_run jq    "$@" ;;
 
         run)
             local fp="$1"; shift 1
