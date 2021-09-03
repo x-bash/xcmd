@@ -350,7 +350,7 @@ x(){
         rc|src) SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
         z)  (   xrc zuz && zuz z "$@"   )   ;;
         uz) (   xrc zuz && zuz uz "$@" )    ;;
-        ubu|alp|deb|cen|bus) (  xrc xdk;        xdk "$@"    ) ;;
+        ubu|alp|deb|cen|bus) (  xrc xdk;        xdk "$@";    ) ;;
         docker|dk|xdk) (
             xrc xdk
             xdk "$@"
