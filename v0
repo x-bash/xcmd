@@ -283,6 +283,36 @@ A
     esac
 }
 
+
+# Section : utilties
+xrc static-build
+    
+___x_jq(){
+    static_build_init jq jq ___x_jq && ___x_jq "$@"
+}
+
+___x_bw(){
+    static_build_init bw bw ___x_bw && ___x_bw "$@"
+}
+
+___x_exa(){
+    static_build_init exa exa ___x_exa && ___x_exa "$@"
+}
+
+___x_dust(){
+    static_build_init dust dust ___x_dust && ___x_dust "$@"
+}
+
+___x_proc(){
+    static_build_init proc proc ___x_proc && ___x_proc "$@"
+}
+
+___x_bat(){
+    static_build_init bat bat ___x_bat && ___x_bat "$@"
+}
+
+# EndSection
+
 xrc x-cmd/_v0/node
 xrc x-cmd/_v0/python
 # . _v0/node
@@ -352,14 +382,14 @@ x(){
             ;;
         7zr)            ( xrc p7zr/v0   &&  p7zr "$@" ) ;;
         7z)             ( xrc p7z/v0    &&  p7z "$@" ) ;;
-        ls)             _x_xrc_run exa   "$@" ;;
-        ll)             x ls -l "$@" ;;
+        ls)             ___x_exa        "$@" ;;
+        ll)             ___x_exa  -l    "$@" ;;
 
-        ps|procs)       _x_xrc_run procs        "$@" ;;
-        du|dust)        _x_xrc_run dust         "$@" ;;
-        bat|cat)        _x_xrc_run bat          "$@" ;;
-        bw)             _x_xrc_run bw           "$@" ;;
-        jq)             _x_xrc_static_run jq    "$@" ;;
+        ps|procs)       ___x_procs      "$@" ;;
+        du|dust)        ___x_dust       "$@" ;;
+        bat|cat)        ___x_bat        "$@" ;;
+        bw)             ___x_bw         "$@" ;;
+        jq)             ___x_jq         "$@" ;;
 
         run)
             local fp="$1"; shift 1
