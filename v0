@@ -314,27 +314,27 @@ A
 xrc static-build
 
 ___x_jq(){
-    static_build_init jq jq ___x_jq && ___x_jq "$@"
+    static_build_init jq jq ___x_jq && ___x_jq          "$@"
 }
 
 ___x_bw(){
-    static_build_init bw bw ___x_bw && ___x_bw "$@"
+    static_build_init bw bw ___x_bw && ___x_bw          "$@"
 }
 
 ___x_exa(){
-    static_build_init exa exa ___x_exa && ___x_exa "$@"
+    static_build_init exa exa ___x_exa && ___x_exa      "$@"
 }
 
 ___x_dust(){
-    static_build_init dust dust ___x_dust && ___x_dust "$@"
+    static_build_init dust dust ___x_dust && ___x_dust  "$@"
 }
 
 ___x_proc(){
-    static_build_init proc proc ___x_proc && ___x_proc "$@"
+    static_build_init proc proc ___x_proc && ___x_proc  "$@"
 }
 
 ___x_bat(){
-    static_build_init bat bat ___x_bat && ___x_bat "$@"
+    static_build_init bat bat ___x_bat && ___x_bat      "$@"
 }
 
 # EndSection
