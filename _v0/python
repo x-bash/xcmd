@@ -155,10 +155,14 @@ _x_python3(){
     case $? in
         0)       
             eval "$code"
-            if ! xfp="$(xrc which "$FP")"; then
-                return
+            if [ -z $FP ]; then
+                if ! xfp="$(xrc which "$FP")"; then
+                    return
+                fi
+                eval _x_python3_bin "$S1" "\"\$xfp\"" "$S2" 
+            else
+                _x_python3_bin "$@"
             fi
-            eval _x_python3_bin "$S1" "\"\$xfp\"" "$S2" 
             ;;
         126)        
             _x_python3_bin "$@"
