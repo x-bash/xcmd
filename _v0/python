@@ -161,7 +161,7 @@ ___xcmd_python3(){
                 fi
                 eval ___xcmd_python3_bin "$S1" "\"\$xfp\"" "$S2"
             else
-                _x_python3_bin "$@"
+                ___xcmd_python3_bin "$@"
             fi
             ;;
         126)
