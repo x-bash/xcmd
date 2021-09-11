@@ -155,7 +155,7 @@ ___xcmd_python3(){
     case $? in
         0)
             eval "$code"
-            if [ -z "$FP" ]; then
+            if [ -n "$FP" ]; then
                 if ! xfp="$(xrc which "$FP")"; then
                     return
                 fi
