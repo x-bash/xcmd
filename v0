@@ -322,7 +322,7 @@ ___xcmd_jq(){
 }
 
 ___xcmd_bw(){
-    static_build_init bw bw ___xcmd_bw && ___xcmd_bw          "$@"
+    static_build_init bandwhich bandwhich ___xcmd_bw && ___xcmd_bw          "$@"
 }
 
 ___xcmd_exa(){
