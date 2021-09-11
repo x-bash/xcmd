@@ -490,6 +490,7 @@ ___xcmd_x_cmd_advise_json(){
     "ps|procs": null,
 }
 A
+    return 126
 }
 
 x(){
