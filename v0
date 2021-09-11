@@ -363,11 +363,11 @@ xcmd(){
         uz) (   xrc zuz && zuz uz "$@" )    ;;
         ubu|alp|deb|cen|bus) (
             xrc xdk;
-            xdk "$@";
+            xdk "$subcmd" "$@";
         ) ;;
         docker|dk|xdk) (
             xrc xdk
-            xdk "$subcmd" "$@"
+            xdk "$@"
         ) ;;
         # java | jar);;
         nvm)
