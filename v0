@@ -376,13 +376,13 @@ xcmd(){
         ;;
 
         pip|pip3)
-            _x_pip3 "$@"
+            ___xcmd_pip3 "$@"
             ;;
         python|py|python3|py3)
-            _x_python3 "$@"
+            ___xcmd_python3 "$@"
             ;;
         javascript|js|node)
-            _x_node "$@"
+            ___xcmd_node "$@"
             ;;
         npm)        _x_npm "$@" ;;
         ts)
