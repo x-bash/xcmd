@@ -104,10 +104,14 @@ ___xcmd_node(){
     case $? in
         0)
             eval "$code"
-            if ! xfp="$(xrc which "$FP")"; then
-                return
+            if [ -z "$FP" ]; then
+                if ! xfp="$(xrc which "$FP")"; then
+                    return
+                fi
+                eval ___xcmd_node_bin "$S1" "\"\$xfp\"" "$S2"
+            else
+                ___xcmd_node_bin "$@"
             fi
-            eval ___xcmd_node_bin "$S1" "\"\$xfp\"" "$S2"
             ;;
         126)
             ___xcmd_node_bin "$@"
