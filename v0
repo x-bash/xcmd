@@ -384,7 +384,7 @@ xcmd(){
         javascript|js|node)
             ___xcmd_node "$@"
             ;;
-        npm)        _x_npm "$@" ;;
+        npm)        ___xcmd_npm "$@" ;;
         ts)
             local arg
             local argstr
