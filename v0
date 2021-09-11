@@ -447,6 +447,7 @@ xcmd(){
                 fi
             done
             ;;
+        _x_cmd_advise_json)     ___xcmd_x_cmd_advise_json "$@" ;;
         *)
             local p
             if p="$(x which "$subcmd")"; then
