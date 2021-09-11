@@ -468,6 +468,30 @@ xcmd(){
 
 # EndSection
 
+
+___xcmd_x_cmd_advise_json(){
+    cat <<A
+{
+    "z": null,
+    "uz": null,
+    "ubu|alp|deb|cen|bus": null,
+    "docker|dk|xdk": null,
+    "nvm": null,
+    "pip|pip3": null,
+    "python|py|python3|py3": null,
+    "javascript|js|node": null,
+    "npm":  null,
+    "ts": null,
+    "ruby|rb": null,
+    "lua": null,
+    "ruby|rb": null,
+    "jq": null,
+    "ls|ll": null,
+    "ps|procs": null,
+}
+A
+}
+
 x(){
     xcmd "$@"
 }
