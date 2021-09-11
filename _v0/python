@@ -2,7 +2,7 @@
 
 xrc os/v0
 
-_x_python3_path_linux()(
+___xcmd_python3_path_linux()(
     local MINICONDA_PLATFORM
     case "$(os arch)" in
         aarch64)    MINICONDA_PLATFORM=aarch64        ;;
@@ -33,7 +33,7 @@ _x_python3_path_linux()(
     printf "%s" "$X_PYTHON_PATH/${MINICONDA_NAME}"
 )
 
-_x_python3_path_windows()(
+___xcmd_python3_path_windows()(
     local MINICONDA_PLATFORM
     case "$(os arch)" in
         aarch64)    MINICONDA_PLATFORM=aarch64        ;;
@@ -66,14 +66,14 @@ _x_python3_path_windows()(
     printf "%s" "$X_PYTHON_PATH/${MINICONDA_NAME}"
 )
 
-_x_python3_path(){
+___xcmd_python3_path(){
     case "$(os name)" in
         linux)
             local pythonpath
             if pythonpath=$(command -v python3); then
                 printf "%s" "$pythonpath"
             else
-                printf "%s" "$(_x_python3_path_linux)/bin/python3"
+                printf "%s" "$(___xcmd_python3_path_linux)/bin/python3"
             fi
             ;;
         windows)
@@ -81,36 +81,36 @@ _x_python3_path(){
             if pythonpath=$(command -v python3); then
                 printf "%s" "$pythonpath"
             else
-                printf "%s" "$(_x_python3_path_windows)/bin/python3"
+                printf "%s" "$(___xcmd_python3_path_windows)/bin/python3"
             fi
             ;;
-        darwin)     
+        darwin)
             printf "%s" "/usr/bin/python3"
             ;;
     esac
 }
 
-_x_python3_bin(){
+___xcmd_python3_bin(){
     local pythonpath
-    pythonpath="$(_x_python3_path)"
+    pythonpath="$(___xcmd_python3_path)"
 
     eval "
-_x_python3_bin(){
+___xcmd_python3_bin(){
     $(printf "%s" "$pythonpath") \"\$@\" ;
 }"
 
-    _x_python3_bin "$@"
+    ___xcmd_python3_bin "$@"
 }
 
-_x_pip3_path(){
+___xcmd_pip3_path(){
     case "$(os name)" in
         linux)
             local py3path
-            if py3path="$(_x_python3_path_linux)"; then
+            if py3path="$(___xcmd_python3_path_linux)"; then
                 printf "%s" "$py3path/bin/pip3"
             fi
             ;;
-        darwin)     
+        darwin)
             printf "%s" "/usr/bin/pip3"
             ;;
         win*)
@@ -118,17 +118,17 @@ _x_pip3_path(){
     esac
 }
 
-_x_pip3(){
+___xcmd_pip3(){
     local rp
-    if rp="$(_x_pip3_path)"; then
+    if rp="$(___xcmd_pip3_path)"; then
     eval "
-_x_pip3(){
+___xcmd_pip3(){
     $rp \"\$@\"
 }
 "
     fi
 
-    _x_pip3 "$@"
+    ___xcmd_pip3 "$@"
 
 }
 
@@ -140,7 +140,7 @@ _python_arg(){
     local p
     p="$(xrc which x-cmd/_v0/python_argparse.awk)"
     # p="$(xrc which ./_v0/python_argparse.awk)"
-    
+
     awk \
         -v ARG_SEP="$IFS" \
         -f "$p" <<A
@@ -149,19 +149,19 @@ A
 
 }
 
-_x_python3(){
+___xcmd_python3(){
     local code
     code="$(_python_arg "$@")"
     case $? in
-        0)       
+        0)
             eval "$code"
             if ! xfp="$(xrc which "$FP")"; then
                 return
             fi
-            eval _x_python3_bin "$S1" "\"\$xfp\"" "$S2" 
+            eval ___xcmd_python3_bin "$S1" "\"\$xfp\"" "$S2"
             ;;
-        126)        
-            _x_python3_bin "$@"
+        126)
+            ___xcmd_python3_bin "$@"
             ;;
     esac
 
