@@ -54,7 +54,7 @@ ___xcmd_python3_path_windows()(
             chmod +x "${MINICONDA_NAME}.sh" &&
                 {
                     local p
-                    p="$(xrc which x-cmd/_v0/python_bat.bat)"
+                    p="$(xrc which xcmd/_v0/python_bat.bat)"
                     eval "cmd.exe" "$p"
                 } 1>&2
             # TODO: remove the file: "${MINICONDA_NAME}.sh"
