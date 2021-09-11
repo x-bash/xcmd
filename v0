@@ -17,7 +17,7 @@ ___x_readlink_recursive(){
 }
 
 
-# Section : Unfinissh _x_official_which
+# Section : Unfinissh ___x_official_which
 
 _x_mirror(){
     "https://x-cmd.github.io/x-official"
@@ -31,7 +31,7 @@ _x_mirror(){
 # 2. Global sharing folder.
 # Consider using the sha512 to calculate the file hash for this purpose.
 
-_x_official_which(){
+___x_official_which(){
     X_CMD_SRC_PATH="$HOME/.x-cmd"
     local target="${1:-Provide target path}"
     local cache="$X_CMD_SRC_PATH/$target"
@@ -398,13 +398,13 @@ x(){
                 esac
             done
             local script
-            # script="$(_x_official_which "$1")"
+            # script="$(___x_official_which "$1")"
             script="$1"
             shift
             eval "$argstr" "$script" "$@"
             ;;
         ruby|rb)
-            ruby "$(_x_official_which "$2")" "$@"     ;;
+            ruby "$(___x_official_which "$2")" "$@"     ;;
         lua)
             ;;
         7zr)            ( xrc p7zr/v0   &&  p7zr "$@" ) ;;
