@@ -345,8 +345,8 @@ ___xcmd_bat(){
 
 
 # Section : Runtime
-xrc x-cmd/_v0/node
-xrc x-cmd/_v0/python
+xrc xcmd/_v0/node
+xrc xcmd/_v0/python
 # . _v0/node
 # . _v0/python
 
