@@ -385,6 +385,7 @@ xcmd(){
             ___xcmd_node "$@"
             ;;
         npm)        ___xcmd_npm "$@" ;;
+        npx)        ___xcmd_npx "$@" ;;
         ts)
             local arg
             local argstr
