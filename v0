@@ -57,7 +57,7 @@ A
 
 # Section : run by file: get_engine_by_file* and run_by_file*
 
-___x_get_engine_by_file_header(){
+___xcmd_get_engine_by_file_header(){
     local filepath="${1:?filepath}"; shift
     case "$(head -n1 filepath)" in
         *python*)       printf "%s" python         ;;
@@ -68,15 +68,15 @@ ___x_get_engine_by_file_header(){
     esac
 }
 
-___x_run_by_file_header(){
+___xcmd_run_by_file_header(){
     local filepath="${1:?filepath}"; shift
     local engine
-    if engine="$(___x_get_engine_by_file_header "$filepath")"; then
+    if engine="$(___xcmd_get_engine_by_file_header "$filepath")"; then
         xcmd "$engine" "$filepath" "$@"
     fi
 }
 
-___x_get_engine_by_file_ext(){
+___xcmd_get_engine_by_file_ext(){
     local filepath="${1:?filepath}"; shift
     local ext="${filepath##*.}"
     case "$ext" in
@@ -88,24 +88,24 @@ ___x_get_engine_by_file_ext(){
     esac
 }
 
-___x_run_by_file_ext(){
+___xcmd_run_by_file_ext(){
     local filepath="${1:?filepath}"; shift
     local engine
-    if engine="$(___x_get_engine_by_file_ext "$filepath")"; then
+    if engine="$(___xcmd_get_engine_by_file_ext "$filepath")"; then
         xcmd "$engine" "$filepath" "$@"
     fi
 }
 
-___x_get_engine_by_file(){
+___xcmd_get_engine_by_file(){
     local filepath="${1:?filepath}"
-    ___x_get_engine_by_file_ext "$filepath" || ___x_get_engine_by_file_header "$filepath"
+    ___xcmd_get_engine_by_file_ext "$filepath" || ___xcmd_get_engine_by_file_header "$filepath"
 }
 
 
-___x_run_by_file(){
+___xcmd_run_by_file(){
     local filepath="${1:?filepath}"; shift
     local engine
-    if engine="$(___x_get_engine_by_file "$filepath")"; then
+    if engine="$(___xcmd_get_engine_by_file "$filepath")"; then
         xcmd "$engine" "$filepath" "$@"
     fi
 }
@@ -126,7 +126,7 @@ ___xcmd_abspath(){
 
 # Section : Find And Execute at .x-cmd folder
 
-___x_exe_workspace(){
+___xcmd_exe_workspace(){
     local filepath="${1:?filepath}"
     if [ -L "$filepath" ]; then
         local target_path
@@ -160,12 +160,12 @@ A
         local code=$?
         # Bad interpreter
         if [ $code != 126 ] && [ $code != 127 ]; then
-            ___x_run_by_file_ext "$filepath" "$@"
+            ___xcmd_run_by_file_ext "$filepath" "$@"
             return
         fi
     fi
 
-    ___x_run_by_file_ext "$filepath" "$@"
+    ___xcmd_run_by_file_ext "$filepath" "$@"
     code=$?
 
     if [ $code = 126 ]; then
@@ -432,7 +432,7 @@ xcmd(){
                 *.rb)       xcmd ruby              "$fp" "$@"    ;;
                 *.lua)      xcmd lua               "$fp" "$@"    ;;
                 *.ts)       xcmd ts                "$fp" "$@"    ;;
-                *)          ___x_exe_workspace    "$fp" "$@"    ;;
+                *)          ___xcmd_exe_workspace    "$fp" "$@"    ;;
             esac
             ;;
         search_path)
@@ -464,7 +464,7 @@ xcmd(){
         *)
             local p
             if p="$(x which "$subcmd")"; then
-                ___x_exe_workspace "$p" "$@"
+                ___xcmd_exe_workspace "$p" "$@"
                 return
             fi
 
