@@ -73,7 +73,12 @@ ___xcmd_get_engine_by_file_header(){
         *ruby*)         printf "%s" ruby            ;;
         *node*)         printf "%s" node            ;;
         *ts*)           printf "%s" ts              ;;
+
+        *bash*)         printf "%s" bash            ;;
+        *zsh*)          printf "%s" zsh             ;;
         *fish*)         printf "%s" fish            ;;
+        *ksh*)          printf "%s" ksh             ;;
+        *sh*)           printf "%s" sh              ;;
         *)              return 127
     esac
 }
@@ -90,12 +95,19 @@ ___xcmd_get_engine_by_file_ext(){
     local filepath="${1:?filepath}"; shift
     local ext="${filepath##*.}"
     case "$ext" in
+        "$filepath")    return 126                  ;;
         py)             printf "%s" python          ;;
         rb)             printf "%s" ruby            ;;
         js)             printf "%s" node            ;;
         ts)             printf "%s" ts              ;;
-        fish)           printf "%s" fish            ;;
+
         7z)             printf "%s" 7z              ;;
+
+        bash)           printf "%s" bash            ;;
+        zsh)            printf "%s" zsh             ;;
+        fish)           printf "%s" fish            ;;
+        ksh)            printf "%s" ksh             ;;
+        sh)             printf "%s" sh              ;;
         *)              return 126                  ;;
     esac
 }
