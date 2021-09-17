@@ -321,6 +321,15 @@ xrc xcmd/_v0/python
 # EndSection
 
 
+# Section : engine management
+
+# node: node v12 and above, xcmd using v16
+# python: v3.6 and above, python using v14
+
+
+
+# EndSection
+
 # Section : xcmd main function
 
 xcmd(){
@@ -428,14 +437,6 @@ xcmd(){
             fi
 
             printf "%s" "$p"
-
-            # if [ -z "$X_CMD_PATH" ] && ! X_CMD_PATH="$(command -v x)"; then
-            #     if ! eval "$(curl https://get.x-cmd.com/x-cmd-binary)" || ! X_CMD_PATH="$(command -v x)"; then
-            #         echo "Installation of x-cmd binary failed. Please retry again." >&2
-            #         return 1
-            #     fi
-            # fi
-            # "$X_CMD_PATH" "$@"  ;;
     esac
 }
 
