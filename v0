@@ -79,6 +79,7 @@ ___xcmd_get_engine_by_file_header(){
         *zsh*)          printf "%s" zsh             ;;
         *fish*)         printf "%s" fish            ;;
         *ksh*)          printf "%s" ksh             ;;
+
         *sh*)           printf "%s" sh              ;;
         *)              return 127
     esac
@@ -110,6 +111,7 @@ ___xcmd_get_engine_by_file_ext(){
         fish)           printf "%s" fish            ;;
         ksh)            printf "%s" ksh             ;;
         sh)             printf "%s" sh              ;;
+
         *)              return 126                  ;;
     esac
 }
@@ -191,48 +193,11 @@ A
         fi
     fi
 
-    ___xcmd_run_by_file_ext "$filepath" "$@"
-    code=$?
-
-    if [ $code = 126 ]; then
-        if head -n1 "$filepath" | grep "\#\!" 1>/dev/null; then
-            printf "=> \033[33m%s\033[0m:\n   %s\n\n" "Target file is NOT an executable file." "$filepath"
-            local action
-            while true; do
-                printf "%s" "=> Change its mode to +x? (y/n, default is y)? " >&2
-                read -r action
-                case $action in
-                    n|no|nein|ne)  cat <<A
-=> Sorry. \033[31;1mCANNOT execute an non-executable file \033[0m.
-=> You could grant the permission as following:
-\033[32m    chmod +x \"$filepath\" \033[;0m
+    ___xcmd_run_by_file "$filepath" "$@"
+    if [ $? = 126 ]; then
+        cat >&2 <<A
+Cannot find out how to execute the file: "$filepath". Please specify the execution engine. For more information, consult 'x help'
 A
-                        return 1
-                        ;;
-                    *)
-                        if [ "$action" = y ] || [ -z "$action" ]; then
-                            if chmod +x "$filepath"; then
-                                printf "\033[32m%s\033[0m\n\n" "Successfully grant execute permission." >&2
-                                "$filepath" "$@"
-                                return
-                            else
-                                local code=$?
-                                printf "\033[31m%s\033[0m\n\n" "Failed to grant execute permission." >&2
-                                return "$code"
-                            fi
-                        fi
-                        continue ;;
-                esac
-            done
-        fi
-
-        # If it is a 7z, zip? it should be unzip !
-        # Command file not found in alpine.
-        if file "$filepath" | grep -iq "ASCII"; then
-            cat "$filepath"
-        else
-            xcmd hex "$filepath" "$@"
-        fi
     fi
 
 }
