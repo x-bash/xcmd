@@ -57,13 +57,22 @@ A
 
 # Section : run by file: get_engine_by_file* and run_by_file*
 
+___xcmd_run_with_engine(){
+    local engine="${1:?engine}";            shift
+    local filepath="${2:?filepath}";        shift
+    case "$engine" in
+        *)          xcmd "$engine" "$@"             ;;
+    esac
+}
+
 ___xcmd_get_engine_by_file_header(){
     local filepath="${1:?filepath}"; shift
     case "$(head -n1 filepath)" in
-        *python*)       printf "%s" python         ;;
-        *ruby*)         printf "%s" ruby           ;;
-        *node*)         printf "%s" node           ;;
-        *ts*)           printf "%s" ts             ;;
+        *python*)       printf "%s" python          ;;
+        *ruby*)         printf "%s" ruby            ;;
+        *node*)         printf "%s" node            ;;
+        *ts*)           printf "%s" ts              ;;
+        *fish*)         printf "%s" fish            ;;
         *)              return 127
     esac
 }
@@ -80,11 +89,12 @@ ___xcmd_get_engine_by_file_ext(){
     local filepath="${1:?filepath}"; shift
     local ext="${filepath##*.}"
     case "$ext" in
-        py)     printf "%s" python    ;;
-        rb)     printf "%s" ruby      ;;
-        js)     printf "%s" node      ;;
-        ts)     printf "%s" ts        ;;
-        *)      return 126 ;;
+        py)             printf "%s" python          ;;
+        rb)             printf "%s" ruby            ;;
+        js)             printf "%s" node            ;;
+        ts)             printf "%s" ts              ;;
+        fish)           printf "%s" fish            ;;
+        *)              return 126                  ;;
     esac
 }
 
@@ -371,19 +381,23 @@ xcmd(){
         z)  (   xrc zuz && zuz z "$@"   )   ;;
         uz) (   xrc zuz && zuz uz "$@" )    ;;
         ubu|alp|deb|cen|bus) (
-            xrc xdk;
-            xdk "$subcmd" "$@";
-        ) ;;
+            xrc xdk
+            xdk "$subcmd" "$@"
+        )   ;;
         docker|dk|xdk) (
             xrc xdk
             xdk "$@"
-        ) ;;
-        # java | jar);;
+        )   ;;
+        jar)
+            java -jar "$@"
+            ;;
+        java)
+            java "$@"
+            ;;
         nvm)
             xrc nvm/v0
             nvm "$@"
-        ;;
-
+            ;;
         pip|pip3)
             ___xcmd_pip3 "$@"
             ;;
