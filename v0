@@ -82,7 +82,7 @@ ___xcmd_run_by_file_header(){
     local filepath="${1:?filepath}"; shift
     local engine
     if engine="$(___xcmd_get_engine_by_file_header "$filepath")"; then
-        xcmd "$engine" "$filepath" "$@"
+        ___xcmd_run_with_engine "$engine" "$filepath" "$@"
     fi
 }
 
@@ -104,7 +104,7 @@ ___xcmd_run_by_file_ext(){
     local filepath="${1:?filepath}"; shift
     local engine
     if engine="$(___xcmd_get_engine_by_file_ext "$filepath")"; then
-        xcmd "$engine" "$filepath" "$@"
+        ___xcmd_run_with_engine "$engine" "$filepath" "$@"
     fi
 }
 
@@ -118,7 +118,7 @@ ___xcmd_run_by_file(){
     local filepath="${1:?filepath}"; shift
     local engine
     if engine="$(___xcmd_get_engine_by_file "$filepath")"; then
-        xcmd "$engine" "$filepath" "$@"
+        ___xcmd_run_with_engine "$engine" "$filepath" "$@"
     fi
 }
 
