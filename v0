@@ -61,7 +61,8 @@ ___xcmd_run_with_engine(){
     local engine="${1:?engine}";            shift
     local filepath="${2:?filepath}";        shift
     case "$engine" in
-        *)          xcmd "$engine" "$@"             ;;
+        7z)         xcmd 7z x "$filepath" "$@"      ;;
+        *)          xcmd "$engine" "$filepath" "$@" ;;
     esac
 }
 
@@ -94,6 +95,7 @@ ___xcmd_get_engine_by_file_ext(){
         js)             printf "%s" node            ;;
         ts)             printf "%s" ts              ;;
         fish)           printf "%s" fish            ;;
+        7z)             printf "%s" 7z              ;;
         *)              return 126                  ;;
     esac
 }
