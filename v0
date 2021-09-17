@@ -55,7 +55,7 @@ A
 
 # EndSection
 
-# Section : Utitilies
+# Section : run by file: get_engine_by_file* and run_by_file*
 
 ___x_get_engine_by_file_header(){
     local filepath="${1:?filepath}"; shift
@@ -110,6 +110,7 @@ ___x_run_by_file(){
     fi
 }
 
+# EndSection
 
 ___xcmd_abspath(){
     local target_path="${1:-Please provide path}"
