@@ -57,28 +57,59 @@ A
 
 # Section : Utitilies
 
-___x_run_by_header(){
+___x_get_engine_by_file_header(){
     local filepath="${1:?filepath}"; shift
     case "$(head -n1 filepath)" in
-        *python*)       xcmd python "$@"         ;;
-        *ruby*)         xcmd python "$@"         ;;
-        *node*)         xcmd node "$@"           ;;
-        *ts*)           xcmd ts "$@"             ;;
+        *python*)       printf "%s" python         ;;
+        *ruby*)         printf "%s" ruby           ;;
+        *node*)         printf "%s" node           ;;
+        *ts*)           printf "%s" ts             ;;
         *)              return 127
     esac
 }
 
-___x_run_by_ext(){
+___x_run_by_file_header(){
+    local filepath="${1:?filepath}"; shift
+    local engine
+    if engine="$(___x_get_engine_by_file_header "$filepath")"; then
+        xcmd "$engine" "$filepath" "$@"
+    fi
+}
+
+___x_get_engine_by_file_ext(){
     local filepath="${1:?filepath}"; shift
     local ext="${filepath##*.}"
     case "$ext" in
-        py)     xcmd python    "$filepath" "$@"      ;;
-        rb)     xcmd ruby      "$filepath" "$@"      ;;
-        ts)     xcmd ts        "$filepath" "$@"      ;;
-        js)     xcmd node      "$filepath" "$@"      ;;
+        py)     printf "%s" python    ;;
+        rb)     printf "%s" ruby      ;;
+        js)     printf "%s" node      ;;
+        ts)     printf "%s" ts        ;;
         *)      return 126 ;;
     esac
 }
+
+___x_run_by_file_ext(){
+    local filepath="${1:?filepath}"; shift
+    local engine
+    if engine="$(___x_get_engine_by_file_ext "$filepath")"; then
+        xcmd "$engine" "$filepath" "$@"
+    fi
+}
+
+___x_get_engine_by_file(){
+    local filepath="${1:?filepath}"
+    ___x_get_engine_by_file_ext "$filepath" || ___x_get_engine_by_file_header "$filepath"
+}
+
+
+___x_run_by_file(){
+    local filepath="${1:?filepath}"; shift
+    local engine
+    if engine="$(___x_get_engine_by_file "$filepath")"; then
+        xcmd "$engine" "$filepath" "$@"
+    fi
+}
+
 
 ___xcmd_abspath(){
     local target_path="${1:-Please provide path}"
@@ -128,12 +159,12 @@ A
         local code=$?
         # Bad interpreter
         if [ $code != 126 ] && [ $code != 127 ]; then
-            ___x_run_by_ext "$filepath" "$@"
+            ___x_run_by_file_ext "$filepath" "$@"
             return
         fi
     fi
 
-    ___x_run_by_ext "$filepath" "$@"
+    ___x_run_by_file_ext "$filepath" "$@"
     code=$?
 
     if [ $code = 126 ]; then
