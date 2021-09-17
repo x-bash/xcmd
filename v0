@@ -57,10 +57,25 @@ A
 
 # Section : run by file: get_engine_by_file* and run_by_file*
 
+___xrc_run()(
+    local ___xrc_run_filepath="${1:?filepath}";        shift
+    xrc "$___xrc_run_filepath"
+    local ___xrc_module_name="${___xrc_run_filepath##*/}"
+    if [ "$___xcmd_module_name" = "$___xrc_module_name" ]; then
+        cat <<A
+File not containing function: $___xrc_module_name
+Exit without execute: $___xrc_module_name "$@"
+A
+        return 1
+    fi
+    ___xrc_module_name "$@"
+)
+
 ___xcmd_run_with_engine(){
     local engine="${1:?engine}";            shift
     local filepath="${2:?filepath}";        shift
     case "$engine" in
+        x-bash)     ___xrc_run "$filepath" "$@"     ;;
         7z)         xcmd 7z x "$filepath" "$@"      ;;
         *)          xcmd "$engine" "$filepath" "$@" ;;
     esac
@@ -358,7 +373,7 @@ xrc xcmd/_v0/python
 xcmd(){
     local subcmd=$1;    shift
     case "$subcmd" in
-        rc|src) SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
+        rc|src) xrc "$@"                    ;; # SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
         z)  (   xrc zuz && zuz z "$@"   )   ;;
         uz) (   xrc zuz && zuz uz "$@" )    ;;
         ubu|alp|deb|cen|bus) (
