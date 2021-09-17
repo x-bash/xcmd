@@ -70,6 +70,7 @@ ___xcmd_get_engine_by_file_header(){
     local filepath="${1:?filepath}"; shift
     case "$(head -n1 filepath)" in
         *python*)       printf "%s" python          ;;
+        *perl*)         printf "%s" perl            ;;
         *ruby*)         printf "%s" ruby            ;;
         *node*)         printf "%s" node            ;;
         *ts*)           printf "%s" ts              ;;
@@ -97,6 +98,7 @@ ___xcmd_get_engine_by_file_ext(){
     case "$ext" in
         "$filepath")    return 126                  ;;
         py)             printf "%s" python          ;;
+        pl)             printf "%s" perl            ;;
         rb)             printf "%s" ruby            ;;
         js)             printf "%s" node            ;;
         ts)             printf "%s" ts              ;;
