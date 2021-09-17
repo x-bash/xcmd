@@ -168,6 +168,7 @@ A
             done
         fi
 
+        # Command file not found in alpine.
         if file "$filepath" | grep -iq "ASCII"; then
             cat "$filepath"
         else
@@ -179,9 +180,31 @@ A
 
 # EndSection
 
-_____x_run_service(){
-    local filepath="${1:?filepath}"
-    echo "https://kv.x-cmd.com/$filepath"
+_____x_get_token(){
+    printf "%s" "token"
+}
+
+______x_prepare_src_in_cloud(){
+    local uri="${1:?uri}"
+    local owner="${uri%%/*}"
+    local path="${url#*/}"
+
+    local target_url="https://sparkle.x-cmd.com/$uri"
+    local token
+    if token="$(_____x_get_token "$owner")"; then
+        target_url="$target_url?TOKEN=$token"
+    fi
+
+    local CACHE="$X_CMD_SRC_PATH/$uri"
+    if xrc_curl "$target_url"; then
+        printf "%s" "$CACHE"
+    else
+        return
+    fi
+}
+
+___x_default_user(){
+    printf "%s" "l"
 }
 
 ___x_prepare_src(){
@@ -192,37 +215,43 @@ ___x_prepare_src(){
         @gt/*|@gitee/*)             # using github service
             ;;
         @x/*)
-            _____x_run_service "official/${filepath#@x/}" ;;
+            ___x_prepare_src "@$(___x_default_user)/${filepath#@/}" "$@" ;;
         @*/*)
-            _____x_run_service "${filepath#@}"            ;;
+            ______x_prepare_src_in_cloud "${filepath#@}" ;;
         http://*|https://*)
             if [ -z "$NOWARN" ]; then
-                echo "Sourcing script from unknown location: " "$RESOURCE_NAME"
+                xcmd_log warn "Sourcing script from unknown location: " "$RESOURCE_NAME"
                 cat >&2 <<A
 SECURITY WARNING! Sourcing script from unknown location: $RESOURCE_NAME
 If you confirm this script is secure and want to skip this warning for some purpose, use the following code.
     > NOWARN=1 xcmd "$filepath" "$@"
 
 A
-                printf "Input yes to continue. Otherwise exit > " >&2
+                printf "%s" "Input yes to continue. Otherwise exit > " >&2
                 local input
-                read input
+                read -r input
 
                 if [ "$input" != "yes" ]; then
-                    echo "Exit becaause detect a non yes output: $input" >&2
+                    printf "%s" "Exit becaause detect a non yes output: $input" >&2
                     return 1
                 fi
             fi
 
-            # TODO: change the BASE64-name
             TGT="$X_BASH_SRC_PATH/BASE64-URL-$(printf "%s" "$RESOURCE_NAME" | base64 | tr -d '\r\n')"
             if ! CACHE="$TGT" xrc_curl "$RESOURCE_NAME"; then
                 xrc_log debug "ERROR: Fail to load http resource due to network error or other: $RESOURCE_NAME "
                 return 1
             fi
 
-            echo "$TGT"
+            printf "%s" "$TGT"
             return 0
+            ;;
+        /*)
+            printf "%s" "$filepath"
+            ;;
+        ./*|../*)
+            printf "%s" "$filepath"
+            # (   cd "$(dirname "$filepath")" && printf "%s/%s" "$(pwd)" "$(basename "$filepath")";   )
             ;;
         *)
             local fp
@@ -230,72 +259,11 @@ A
                 # Slow down? Unknown malicious script. Is it in the whitelist?
                 # - Put it in the whitelist: yes
                 # - Reject: n
-                # - Put this all files in .x-cmd in the whitelist? all
-                ___x_exe_workspace "$fp" "$@"
-            else
-                _____x_run_service "$filepath" "$@"
+                # - Put these all files in .x-cmd in the whitelist? all
+                printf "%s" "$fp"
+                return
             fi
-            ;;
-    esac
-}
-
-___x_run(){
-    local filepath="${1:?filepath}";
-    shift
-    # @git/
-    # @x/
-    # x/work    # local filepath?
-    # ./x-cmd   # how to
-    case "$filepath" in
-        @github/*|@gh/*)             # using github service
-            ;;
-        @gt/*|@gitee/*)             # using github service
-            ;;
-        @x/*|@official/*)
-            _____x_run_service "official/${filepath#@x/}" ;;
-        @*/*)
-            _____x_run_service "${filepath#@}"            ;;
-        http://*|https://*)
-            if [ -z "$NOWARN" ]; then
-                echo "Sourcing script from unknown location: " "$RESOURCE_NAME"
-                cat >&2 <<A
-SECURITY WARNING! Sourcing script from unknown location: $RESOURCE_NAME
-If you confirm this script is secure and want to skip this warning for some purpose, use the following code.
-    > NOWARN=1 xcmd "$filepath" "$@"
-
-A
-                printf "Input yes to continue. Otherwise exit > " >&2
-                local input
-                read input
-
-                if [ "$input" != "yes" ]; then
-                    echo "Exit becaause detect a non yes output: $input" >&2
-                    return 1
-                fi
-            fi
-
-            # TODO: change the BASE64-name
-            TGT="$X_BASH_SRC_PATH/BASE64-URL-$(printf "%s" "$RESOURCE_NAME" | base64 | tr -d '\r\n')"
-            if ! CACHE="$TGT" xrc_curl "$RESOURCE_NAME"; then
-                xrc_log debug "ERROR: Fail to load http resource due to network error or other: $RESOURCE_NAME "
-                return 1
-            fi
-
-            echo "$TGT"
-            return 0
-            ;;
-        # *:*)   # for ssh  ;;
-        *)
-            local fp
-            if fp=$(x search_path . "$filepath"); then
-                # Slow down? Unknown malicious script. Is it in the whitelist?
-                # - Put it in the whitelist: yes
-                # - Reject: n
-                # - Put this all files in .x-cmd in the whitelist? all
-                ___x_exe_workspace "$fp" "$@"
-            else
-                _____x_run_service "$filepath" "$@"
-            fi
+            printf "%s" "$filepath"
             ;;
     esac
 }
