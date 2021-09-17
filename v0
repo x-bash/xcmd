@@ -57,7 +57,7 @@ A
 
 # Section : Utitilies
 
-___x_header(){
+___x_run_by_header(){
     local filepath="${1:?filepath}"; shift
     case "$(head -n1 filepath)" in
         *python*)       xcmd python "$@"         ;;
@@ -68,7 +68,7 @@ ___x_header(){
     esac
 }
 
-___x_guest(){
+___x_run_by_ext(){
     local filepath="${1:?filepath}"; shift
     local ext="${filepath##*.}"
     case "$ext" in
@@ -128,12 +128,12 @@ A
         local code=$?
         # Bad interpreter
         if [ $code != 126 ] && [ $code != 127 ]; then
-            ___x_guest "$filepath" "$@"
+            ___x_run_by_ext "$filepath" "$@"
             return
         fi
     fi
 
-    ___x_guest "$filepath" "$@"
+    ___x_run_by_ext "$filepath" "$@"
     code=$?
 
     if [ $code = 126 ]; then
@@ -168,6 +168,7 @@ A
             done
         fi
 
+        # If it is a 7z, zip? it should be unzip !
         # Command file not found in alpine.
         if file "$filepath" | grep -iq "ASCII"; then
             cat "$filepath"
