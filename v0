@@ -57,11 +57,11 @@ A
 
 # Section : run by file: get_engine_by_file* and run_by_file*
 
-___xrc_run()(
+___xrc_run(){
     local ___xrc_run_filepath="${1:?filepath}";        shift
     xrc "$___xrc_run_filepath"
     local ___xrc_module_name="${___xrc_run_filepath##*/}"
-    if [ "$___xcmd_module_name" = "$___xrc_module_name" ]; then
+    if [ "$___xrc_module_name" = "$___xrc_module_name" ]; then
         cat <<A
 File not containing function: $___xrc_module_name
 Exit without execute: $___xrc_module_name "$@"
@@ -69,13 +69,17 @@ A
         return 1
     fi
     ___xrc_module_name "$@"
+}
+
+___xcmd_xrc_run()(
+    ___xrc_run "$@"
 )
 
 ___xcmd_run_with_engine(){
     local engine="${1:?engine}";            shift
     local filepath="${2:?filepath}";        shift
     case "$engine" in
-        x-bash)     ___xrc_run "$filepath" "$@"     ;;
+        x-bash)     ___xcmd_xrc_run "$filepath" "$@";;
         7z)         xcmd 7z x "$filepath" "$@"      ;;
         *)          xcmd "$engine" "$filepath" "$@" ;;
     esac
@@ -150,6 +154,8 @@ ___xcmd_run_by_file(){
     local engine
     if engine="$(___xcmd_get_engine_by_file "$filepath")"; then
         ___xcmd_run_with_engine "$engine" "$filepath" "$@"
+    else
+        ___xcmd_run_with_engine x-bash "$filepath" "$@"
     fi
 }
 
