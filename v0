@@ -109,7 +109,7 @@ ___x_exe_workspace(){
 "=> Running file: $filepath ?
 => Enter or press y to continue, n to abort. default is y: "
 
-            read action
+            read -r action
             case $action in
                 n|no|nein|ne)  cat >&2 <<A
 => You could run the file by yourself:
@@ -142,7 +142,7 @@ A
             local action
             while true; do
                 printf "%s" "=> Change its mode to +x? (y/n, default is y)? " >&2
-                read action
+                read -r action
                 case $action in
                     n|no|nein|ne)  cat <<A
 => Sorry. \033[31;1mCANNOT execute an non-executable file \033[0m.
@@ -187,7 +187,7 @@ _____x_get_token(){
 ______x_prepare_src_in_cloud(){
     local uri="${1:?uri}"
     local owner="${uri%%/*}"
-    local path="${url#*/}"
+    # local path="${url#*/}"
 
     local target_url="https://sparkle.x-cmd.com/$uri"
     local token
@@ -325,7 +325,6 @@ xrc xcmd/_v0/python
 
 # node: node v12 and above, xcmd using v16
 # python: v3.6 and above, python using v14
-
 
 
 # EndSection
