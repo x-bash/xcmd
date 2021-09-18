@@ -19,7 +19,7 @@ ___xcmd_readlink_recursive(){
 
 # Section : Unfinished ___xcmd_official_which
 
-___x_mirror(){
+___xcmd_mirror(){
     "https://x-cmd.github.io/x-official"
     "https://x-cmd.gitee.io/x-official"
 }
@@ -45,7 +45,7 @@ ___xcmd_official_which(){
     fi
 
     if CACHE="$cache" _xrc_curl_gitx "$target" <<A
-$(___x_mirror)
+$(___xcmd_mirror)
 A
     then
         :
@@ -225,18 +225,18 @@ A
 
 # EndSection
 
-______x_get_token(){
+______xcmd_get_token(){
     printf "%s" "token"
 }
 
-______x_prepare_src_in_cloud(){
+______xcmd_prepare_src_in_cloud(){
     local uri="${1:?uri}"
     local owner="${uri%%/*}"
     # local path="${url#*/}"
 
     local target_url="https://sparkle.x-cmd.com/$uri"
     local token
-    if token="$(______x_get_token "$owner")"; then
+    if token="$(______xcmd_get_token "$owner")"; then
         target_url="$target_url?TOKEN=$token"
     fi
 
@@ -248,11 +248,11 @@ ______x_prepare_src_in_cloud(){
     fi
 }
 
-___x_default_user(){
+___xcmd_default_user(){
     printf "%s" "l"
 }
 
-___x_prepare_src(){
+___xcmd_prepare_src(){
     local filepath="${1:?filepath}"
     case "$filepath" in
         @github/*|@gh/*)             # using github service
@@ -260,9 +260,9 @@ ___x_prepare_src(){
         @gt/*|@gitee/*)             # using github service
             ;;
         @x/*)
-            ___x_prepare_src "@$(___x_default_user)/${filepath#@/}" "$@" ;;
+            ___xcmd_prepare_src "@$(___xcmd_default_user)/${filepath#@/}" "$@" ;;
         @*/*)
-            ______x_prepare_src_in_cloud "${filepath#@}" ;;
+            ______xcmd_prepare_src_in_cloud "${filepath#@}" ;;
         http://*|https://*)
             if [ -z "$NOWARN" ]; then
                 xcmd_log warn "Sourcing script from unknown location: " "$RESOURCE_NAME"
