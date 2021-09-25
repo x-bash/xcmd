@@ -156,7 +156,7 @@ ___xcmd_python3(){
         0)
             eval "$code"
             if [ -n "$FP" ]; then
-                if ! xfp="$(___x_prepare_src "$FP")"; then
+                if ! xfp="$(___xcmd_prepare_src "$FP")"; then
                     return
                 fi
                 eval ___xcmd_python3_bin "$S1" "\"\$xfp\"" "$S2"
