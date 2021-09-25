@@ -230,7 +230,7 @@ ______xcmd_get_token(){
     printf "%s" "token"
 }
 
-______xcmd_prepare_src_in_cloud(){
+______xcmd_which_one_in_cloud(){
     local uri="${1:?uri}"
     local owner="${uri%%/*}"
     # local path="${url#*/}"
@@ -253,7 +253,7 @@ ___xcmd_default_user(){
     printf "%s" "l"
 }
 
-___xcmd_prepare_src(){
+___xcmd_which_one(){
     local filepath="${1:?filepath}"
     case "$filepath" in
         @github/*|@gh/*)             # using github service
@@ -261,17 +261,17 @@ ___xcmd_prepare_src(){
         @gt/*|@gitee/*)             # using github service
             ;;
         @x/*)
-            ___xcmd_prepare_src "@$(___xcmd_default_user)/${filepath#@/}" "$@" ;;
+            ___xcmd_which_one "@$(___xcmd_default_user)/${filepath#@/}" "$@" ;;
         @*/*)
-            ______xcmd_prepare_src_in_cloud "${filepath#@}" ;;
+            ______xcmd_which_one_in_cloud "${filepath#@}" ;;
         http://*|https://*)
             if [ -z "$NOWARN" ]; then
                 xcmd_log warn "Sourcing script from unknown location: " "$RESOURCE_NAME"
                 cat >&2 <<A
 SECURITY WARNING! Sourcing script from unknown location: $RESOURCE_NAME
 If you confirm this script is secure and want to skip this warning for some purpose, use the following code.
+    > NOWARN=1 xrc "$RESOURCE_NAME"
     > NOWARN=1 xcmd "$filepath" "$@"
-
 A
                 printf "%s" "Input yes to continue. Otherwise exit > " >&2
                 local input
@@ -309,6 +309,8 @@ A
                 printf "%s" "$fp"
                 return
             fi
+
+            # Remote
             printf "%s" "$filepath"
             ;;
     esac
