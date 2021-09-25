@@ -372,7 +372,9 @@ xcmd(){
         )   ;;
         sh)         /bin/sh     "$@"                ;;
         bash)       /bin/bash   "$@"                ;;
-        zsh)        /bin/bash    "$@"               ;;
+        zsh)        /bin/bash   "$@"                ;;
+        fish)       /bin/fish   "$@"                ;;
+        ksh)        /bin/ksh    "$@"                ;;
         jar)
             java -jar "$@"
             ;;
