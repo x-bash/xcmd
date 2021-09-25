@@ -71,8 +71,8 @@ ___xcmd_xrc_run()(
 )
 
 ___xcmd_run_with_engine(){
-    local engine="${1:?engine}";            shift
-    local filepath="${2:?filepath}";        shift
+    local engine="${1:?Please provide engine}";
+    local filepath="${2:?Please provide filepath}";        shift 2
     case "$engine" in
         x-bash)     ___xcmd_xrc_run "$filepath" "$@";;
         7z)         xcmd 7z x "$filepath" "$@"      ;;
@@ -81,8 +81,8 @@ ___xcmd_run_with_engine(){
 }
 
 ___xcmd_get_engine_by_file_header(){
-    local filepath="${1:?filepath}"; shift
-    case "$(head -n1 filepath)" in
+    local filepath="${1:?Please provide filepath}"; shift
+    case "$(head -n1 "$filepath")" in
         *python*)       printf "%s" python          ;;
         *perl*)         printf "%s" perl            ;;
         *ruby*)         printf "%s" ruby            ;;
@@ -355,6 +355,7 @@ xcmd(){
         z)          (   xrc zuz && zuz z "$@"   )   ;;
         uz)         (   xrc zuz && zuz uz "$@" )    ;;
         notify)     ___xcmd_notify "$@"             ;;
+
         ubu|alp|deb|cen|bus) (
             xrc xdk
             xdk "$subcmd" "$@"
@@ -363,6 +364,9 @@ xcmd(){
             xrc xdk
             xdk "$@"
         )   ;;
+        sh)         /bin/sh     "$@"                ;;
+        bash)       /bin/bash   "$@"                ;;
+        zsh)        /bin/bash    "$@"               ;;
         jar)
             java -jar "$@"
             ;;
@@ -443,8 +447,8 @@ xcmd(){
         _x_cmd_advise_json)     ___xcmd_x_cmd_advise_json "$@" ;;
         *)
             local p
-            if p="$(x which "$subcmd")"; then
-                ___xcmd_exe_workspace "$p" "$@"
+            if p="$(___xcmd_which_one "$subcmd")"; then
+                ___xcmd_run_by_file "$p" "$@"
                 return
             fi
 
