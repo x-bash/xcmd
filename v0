@@ -39,7 +39,7 @@ ___xcmd_official_which(){
         return 1
     fi
 
-    if CACHE="$cache" _xrc_curl_gitx "$target" <<A
+    if CACHE="$cache" ___xcmd_curl_gitx "$target" <<A
 $(___xcmd_mirror)
 A
     then
