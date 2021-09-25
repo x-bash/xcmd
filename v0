@@ -153,12 +153,6 @@ ___xcmd_run_by_file(){
 
     if [ -x "$filepath" ]; then
         "$filepath" "$@"
-        local code=$?
-        # Bad interpreter
-        if [ $code != 126 ] && [ $code != 127 ]; then
-            ___xcmd_run_by_file_ext "$filepath" "$@"
-            return
-        fi
         return
     fi
 
@@ -404,7 +398,7 @@ xcmd(){
             # script="$(___xcmd_official_which "$1")"
             script="$1"
             shift
-            eval "$argstr" "$script" "$@"
+            x npx @typeshell/exec "$argstr" "$script" "$@"
             ;;
         ruby|rb)                                ruby "$(___xcmd_official_which "$2")" "$@"      ;;
         lua)            ;;
