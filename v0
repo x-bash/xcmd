@@ -143,9 +143,13 @@ ___xcmd_get_engine_by_file(){
     ___xcmd_get_engine_by_file_ext "$filepath" || ___xcmd_get_engine_by_file_header "$filepath"
 }
 
-
 ___xcmd_run_by_file(){
     local filepath="${1:?filepath}"; shift
+
+    if [ -L "$filepath" ]; then
+        filepath="$(___xcmd_readlink_recursive "$filepath")"
+        filepath="$(___xcmd_abspath "$filepath")"
+    fi
 
     if [ -x "$filepath" ]; then
         "$filepath" "$@"
