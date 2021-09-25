@@ -443,14 +443,10 @@ xcmd(){
             ;;
         which|w)
             local p
-            local relative_path
-            for relative_path in "$@"; do
-                xcmd_log debug "Relative Path: $relative_path"
-                if p="$(x search_path "$(pwd)" ".x-cmd/$relative_path")"; then
-                    printf "%s" "$p/.x-cmd/$relative_path"
-                    return 0
-                else
-                    continue
+            for p in "$@"; do
+                if ! p=$(___xcmd_which_one "$p"); then
+                    printf "%s\n" "Fail to find path for $p"
+                    return
                 fi
             done
             ;;
