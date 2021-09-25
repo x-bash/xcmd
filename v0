@@ -359,7 +359,7 @@ xcmd(){
         rc|src)         xrc "$@"                    ;; # SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
         *=)         ___xcmd_var "$subcmd" "$@"      ;;
         z)          (   xrc zuz && zuz z "$@"   )   ;;
-        uz)         (   xrc zuz && zuz uz "$@" )    ;;
+        uz)         (   xrc zuz && zuz uz "$@"  )   ;;
         notify)     ___xcmd_notify "$@"             ;;
 
         ubu|alp|deb|cen|bus) (
