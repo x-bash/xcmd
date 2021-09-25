@@ -52,7 +52,7 @@ ___xcmd_npm(){
     ___xcmd_nvm_exec_default npm "$@"
 }
 
-___xcmd_npm(){
+___xcmd_npx(){
     ___xcmd_nvm_exec_default npx "$@"
 }
 
