@@ -353,51 +353,36 @@ ___xcmd_var(){
     eval "$_______variable_name=\"\$result\""
 }
 
+___xcmd_shell_exec(){
+    local shell="${1:?Provide shell}"
+    shift
+    "/bin/$shell" "$@"
+}
+
 xcmd(){
     local subcmd=$1;    shift
     case "$subcmd" in
-        rc|src)     xrc "$@"                        ;; # SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
-        *=)         ___xcmd_var "$subcmd" "$@"      ;;
-        z)          (   xrc zuz && zuz z "$@"   )   ;;
-        uz)         (   xrc zuz && zuz uz "$@"  )   ;;
-        notify)     ___xcmd_notify "$@"             ;;
+        rc|src)                                 xrc "$@" ;; # SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
+        *=)                                     ___xcmd_var "$subcmd" "$@" ;;
 
-        ubu|alp|deb|cen|bus) (
-            xrc xdk
-            xdk "$subcmd" "$@"
-        )   ;;
-        docker|dk|xdk) (
-            xrc xdk
-            xdk "$@"
-        )   ;;
-        sh)         /bin/sh     "$@"                ;;
-        bash)       /bin/bash   "$@"                ;;
-        zsh)        /bin/zsh    "$@"                ;;
-        fish)       /bin/fish   "$@"                ;;
-        ksh)        /bin/ksh    "$@"                ;;
-        dash)       /bin/ksh    "$@"                ;;
-        ash)        /bin/ash    "$@"                ;;
-        jar)
-            java -jar "$@"
-            ;;
-        java)
-            java "$@"
-            ;;
-        nvm)
-            xrc nvm/v0
-            nvm "$@"
-            ;;
-        pip|pip3)
-            ___xcmd_pip3 "$@"
-            ;;
-        python|py|python3|py3)
-            ___xcmd_python3 "$@"
-            ;;
-        javascript|js|node)
-            ___xcmd_node "$@"
-            ;;
-        npm)        ___xcmd_npm "$@" ;;
-        npx)        ___xcmd_npx "$@" ;;
+        z)                                      (   xrc zuz && zuz z "$@"   ) ;;
+        uz)                                     (   xrc zuz && zuz uz "$@"  ) ;;
+        notify)                                 ___xcmd_notify "$@"  ;;
+
+        ubu|alp|deb|cen|bus)                    (   xrc xdk && xdk "$subcmd" "$@" ) ;;
+        docker|dk|xdk)                          (   xrc xdk && xdk "$@" )   ;;
+        sh|bash|zsh|fish|ksh|dash|ash)          ___xcmd_shell_exec "$subcmd" "$@" ;;
+
+        jar)                                    java -jar "$@" ;;
+        java)                                   java "$@" ;;
+
+        pip|pip3)                               ___xcmd_pip3 "$@" ;;
+        python|py|python3|py3)                  ___xcmd_python3 "$@" ;;
+
+        nvm)                                    xrc nvm/v0;     nvm "$@" ;;
+        javascript|js|node)                     ___xcmd_node "$@" ;;
+        npm)                                    ___xcmd_npm "$@" ;;
+        npx)                                    ___xcmd_npx "$@" ;;
         ts)
             local arg
             local argstr
@@ -413,20 +398,21 @@ xcmd(){
             shift
             eval "$argstr" "$script" "$@"
             ;;
-        ruby|rb)                ruby "$(___xcmd_official_which "$2")" "$@"      ;;
+        ruby|rb)                                ruby "$(___xcmd_official_which "$2")" "$@"      ;;
         lua)            ;;
-        7zr)                    ( xrc p7zr/v0   &&  p7zr "$@" )     ;;
-        7z)                     ( xrc p7z/v0    &&  p7z "$@" )      ;;
-        ls)                     ___xcmd_exa        "$@"             ;;
-        ll)                     ___xcmd_exa  -l    "$@"             ;;
-        ps)                     ___xcmd_procs      "$@"             ;;
-        du)                     ___xcmd_dust       "$@"             ;;
-        cat)                    ___xcmd_bat        "$@"             ;;
-        bw)                     ___xcmd_bw         "$@"             ;;
-        jq)                     ___xcmd_jq         "$@"             ;;
 
-        run)                    ___xcmd_run_by_file "$@"            ;;
-        search_path)            ___xcmd_search_path "$@"            ;;
+        7zr)                                    ( xrc p7zr/v0   &&  p7zr "$@" )     ;;
+        7z)                                     ( xrc p7z/v0    &&  p7z "$@" )      ;;
+        ls)                                     ___xcmd_exa        "$@"             ;;
+        ll)                                     ___xcmd_exa  -l    "$@"             ;;
+        ps)                                     ___xcmd_procs      "$@"             ;;
+        du)                                     ___xcmd_dust       "$@"             ;;
+        cat)                                    ___xcmd_bat        "$@"             ;;
+        bw)                                     ___xcmd_bw         "$@"             ;;
+        jq)                                     ___xcmd_jq         "$@"             ;;
+
+        run)                                    ___xcmd_run_by_file "$@"            ;;
+        search_path)                            ___xcmd_search_path "$@"            ;;
         which|w)
             local p
             for p in "$@"; do
