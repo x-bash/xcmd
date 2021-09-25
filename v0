@@ -19,11 +19,6 @@ ___xcmd_readlink_recursive(){
 
 # Section : Unfinished ___xcmd_official_which
 
-___xcmd_mirror(){
-    "https://x-cmd.github.io/x-official"
-    "https://x-cmd.gitee.io/x-official"
-}
-
 # TODO: optimization. Consider sharing the big binary in a common folder.
 # But that will introduce risk.
 # How?
@@ -251,69 +246,6 @@ ______xcmd_which_one_in_cloud(){
 
 ___xcmd_default_user(){
     printf "%s" "l"
-}
-
-___xcmd_which_one(){
-    local filepath="${1:?filepath}"
-    case "$filepath" in
-        @github/*|@gh/*)             # using github service
-            ;;
-        @gt/*|@gitee/*)             # using github service
-            ;;
-        @x/*)
-            ___xcmd_which_one "@$(___xcmd_default_user)/${filepath#@/}" "$@" ;;
-        @*/*)
-            ______xcmd_which_one_in_cloud "${filepath#@}" ;;
-        http://*|https://*)
-            if [ -z "$NOWARN" ]; then
-                xcmd_log warn "Sourcing script from unknown location: " "$RESOURCE_NAME"
-                cat >&2 <<A
-SECURITY WARNING! Sourcing script from unknown location: $RESOURCE_NAME
-If you confirm this script is secure and want to skip this warning for some purpose, use the following code.
-    > NOWARN=1 xrc "$RESOURCE_NAME"
-    > NOWARN=1 xcmd "$filepath" "$@"
-A
-                printf "%s" "Input yes to continue. Otherwise exit > " >&2
-                local input
-                read -r input
-
-                if [ "$input" != "yes" ]; then
-                    printf "%s" "Exit becaause detect a non yes output: $input" >&2
-                    return 1
-                fi
-            fi
-
-            TGT="$X_BASH_SRC_PATH/BASE64-URL-$(printf "%s" "$RESOURCE_NAME" | base64 | tr -d '\r\n')"
-            if ! CACHE="$TGT" xrc_curl "$RESOURCE_NAME"; then
-                xrc_log debug "ERROR: Fail to load http resource due to network error or other: $RESOURCE_NAME "
-                return 1
-            fi
-
-            printf "%s" "$TGT"
-            return 0
-            ;;
-        /*)
-            printf "%s" "$filepath"
-            ;;
-        ./*|../*)
-            printf "%s" "$filepath"
-            # (   cd "$(dirname "$filepath")" && printf "%s/%s" "$(pwd)" "$(basename "$filepath")";   )
-            ;;
-        *)
-            local fp
-            if fp=$(x search_path . "$filepath"); then
-                # Slow down? Unknown malicious script. Is it in the whitelist?
-                # - Put it in the whitelist: yes
-                # - Reject: n
-                # - Put these all files in .x-cmd in the whitelist? all
-                printf "%s" "$fp"
-                return
-            fi
-
-            # Remote
-            printf "%s" "$filepath"
-            ;;
-    esac
 }
 
 
