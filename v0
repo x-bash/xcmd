@@ -146,6 +146,12 @@ ___xcmd_get_engine_by_file(){
 
 ___xcmd_run_by_file(){
     local filepath="${1:?filepath}"; shift
+
+    if [ -x "$filepath" ]; then
+        "$filepath" "$@"
+        return
+    fi
+
     local engine
     if engine="$(___xcmd_get_engine_by_file "$filepath")"; then
         ___xcmd_run_with_engine "$engine" "$filepath" "$@"
