@@ -413,34 +413,20 @@ xcmd(){
             shift
             eval "$argstr" "$script" "$@"
             ;;
-        ruby|rb)
-            ruby "$(___xcmd_official_which "$2")" "$@"      ;;
-        lua)
-            ;;
-        7zr)            ( xrc p7zr/v0   &&  p7zr "$@" )     ;;
-        7z)             ( xrc p7z/v0    &&  p7z "$@" )      ;;
-        ls)             ___xcmd_exa        "$@"             ;;
-        ll)             ___xcmd_exa  -l    "$@"             ;;
+        ruby|rb)                ruby "$(___xcmd_official_which "$2")" "$@"      ;;
+        lua)            ;;
+        7zr)                    ( xrc p7zr/v0   &&  p7zr "$@" )     ;;
+        7z)                     ( xrc p7z/v0    &&  p7z "$@" )      ;;
+        ls)                     ___xcmd_exa        "$@"             ;;
+        ll)                     ___xcmd_exa  -l    "$@"             ;;
+        ps)                     ___xcmd_procs      "$@"             ;;
+        du)                     ___xcmd_dust       "$@"             ;;
+        cat)                    ___xcmd_bat        "$@"             ;;
+        bw)                     ___xcmd_bw         "$@"             ;;
+        jq)                     ___xcmd_jq         "$@"             ;;
 
-        ps)             ___xcmd_procs      "$@"             ;;
-        du)             ___xcmd_dust       "$@"             ;;
-        cat)            ___xcmd_bat        "$@"             ;;
-        bw)             ___xcmd_bw         "$@"             ;;
-        jq)             ___xcmd_jq         "$@"             ;;
-
-        run)            ___xcmd_run_by_file "$@"            ;;
-        search_path)
-            local cur="${1:?Provide starting path}"
-            local relative_filepath="${2:?Provide relative filepath}"
-            while [ ! "$cur" = "" ]; do
-                if [ -f "$cur/$relative_filepath" ]; then
-                    printf "%s" "$cur"
-                    return 0
-                fi
-                cur=${cur%/*}
-            done
-            return 1
-            ;;
+        run)                    ___xcmd_run_by_file "$@"            ;;
+        search_path)            ___xcmd_search_path "$@"            ;;
         which|w)
             local p
             for p in "$@"; do
