@@ -422,9 +422,9 @@ xcmd(){
         ls)             ___xcmd_exa        "$@"             ;;
         ll)             ___xcmd_exa  -l    "$@"             ;;
 
-        ps|procs)       ___xcmd_procs      "$@"             ;;
-        du|dust)        ___xcmd_dust       "$@"             ;;
-        bat|cat)        ___xcmd_bat        "$@"             ;;
+        ps)             ___xcmd_procs      "$@"             ;;
+        du)             ___xcmd_dust       "$@"             ;;
+        cat)            ___xcmd_bat        "$@"             ;;
         bw)             ___xcmd_bw         "$@"             ;;
         jq)             ___xcmd_jq         "$@"             ;;
 
