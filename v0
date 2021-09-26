@@ -435,7 +435,13 @@ ___xcmd_var(){
 ___xcmd_shell_exec(){
     local shell="${1:?Provide shell}"
     shift
-    "/bin/$shell" "$@"
+    if [ -x "/bin/$shell" ]; then
+        "/bin/$shell" "$@"
+    elif [ -x "/usr/bin/$shell" ]; then
+        "/usr/bin/$shell" "$@"
+    else
+        command "$shell" "$@"
+    fi
 }
 
 xcmd(){
