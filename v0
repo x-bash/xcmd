@@ -359,12 +359,10 @@ SYMPOSIS:
 SUBCOMMANDS:
     ls          list all software
     get         get software installation command
-    run         run installation command
 A
         ;;
         ls)             ___xcmd_install_ls "$@" ;;
         get)            ___xcmd_install_get "$@" ;;
-        run)            ___xcmd_install_run "$@" ;;
         *)              ___xcmd_install_run "$subcmd" "$@" ;;
     esac
 }
@@ -542,7 +540,6 @@ ___xcmd_x_cmd_advise_json(){
     "ps|procs": null,
     "install": {
         "ls": null,
-        "run": "x install ls",
         "get": "x install ls",
         "#1": "x install ls"
     }
