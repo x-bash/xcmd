@@ -549,7 +549,9 @@ ___xcmd_x_cmd_advise_json(){
         "ls": null,
         "get": "x install ls",
         "#1": "x install ls"
-    }
+    },
+    "#1": "___xcmd_list_resource",
+    "#n": "___advise_run '' 1"
 }
 A
     return 126
