@@ -249,7 +249,7 @@ ______xcmd_which_one_in_cloud(){
     fi
 
     local CACHE="$X_CMD_SRC_PATH/$uri"
-    if xrc_curl "$target_url"; then
+    if ___xcmd_curl "$target_url"; then
         printf "%s" "$CACHE"
     else
         return
@@ -436,9 +436,9 @@ ___xcmd_shell_exec(){
     local shell="${1:?Provide shell}"
     shift
     if [ -x "/bin/$shell" ]; then
-        "/bin/$shell" "$@"
+        "/bin/$shell" $X_CMD_SRC_PATH/boot && . "$@"
     elif [ -x "/usr/bin/$shell" ]; then
-        "/usr/bin/$shell" "$@"
+        "/usr/bin/$shell" $X_CMD_SRC_PATH/boot && . "$@"
     else
         command "$shell" "$@"
     fi
