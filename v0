@@ -233,33 +233,6 @@ A
 
 # EndSection
 
-______xcmd_get_token(){
-    printf "%s" "token"
-}
-
-______xcmd_which_one_in_cloud(){
-    local uri="${1:?uri}"
-    local owner="${uri%%/*}"
-    # local path="${url#*/}"
-
-    local target_url="https://sparkle.x-cmd.com/$uri"
-    local token
-    if token="$(______xcmd_get_token "$owner")"; then
-        target_url="$target_url?TOKEN=$token"
-    fi
-
-    local CACHE="$X_CMD_SRC_PATH/$uri"
-    if ___xcmd_curl "$target_url"; then
-        printf "%s" "$CACHE"
-    else
-        return
-    fi
-}
-
-___xcmd_default_user(){
-    printf "%s" "l"
-}
-
 
 # Section : utilties in static-build
 xrc static-build
@@ -465,6 +438,7 @@ xcmd(){
     case "$subcmd" in
         login)                                  ___xcmd_login "$@" ;;
         register)                               ___xcmd_register "$@" ;;
+        token)                                  ___xcmd_token "$@" ;;
         hub)                                    ___xcmd_hub "$@" ;;
 
         rc|src)                                 xrc "$@" ;; # SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
