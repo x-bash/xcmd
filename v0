@@ -528,10 +528,14 @@ ___xcmd_x_cmd_advise_json(){
     cat <<A
 {
     "hub": {
-        "share": null,
-        "public": null,
-        "private": null,
-        "ls": null
+        "upload": {
+            "#1": "___advise_ls",
+            "#2": [ "@me/" ]
+        },
+        "share": [ "@me/" ],
+        "public": [ "@me/" ],
+        "private": [ "@me/" ],
+        "ls": [ "@me/" ]
     },
     "z": null,
     "uz": null,
