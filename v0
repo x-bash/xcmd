@@ -444,9 +444,29 @@ ___xcmd_shell_exec(){
     fi
 }
 
+
+# file upload
+# file share
+# file ls
+
+___xcmd_hub(){
+    local subcmd=$1;    shift
+    case "$subcmd" in
+        ls)             ___xcmd_file_ls "$@" ;;
+        upload)         ___xcmd_file_upload "$@" ;;
+        share)          ___xcmd_file_share "$@" ;;
+        public)         ___xcmd_file_share "$@" ;;
+        private)        ___xcmd_file_share "$@" ;;
+    esac
+}
+
 xcmd(){
     local subcmd=$1;    shift
     case "$subcmd" in
+        login)                                  ___xcmd_login "$@" ;;
+        register)                               ___xcmd_register "$@" ;;
+        hub)                                    ___xcmd_hub "$@" ;;
+
         rc|src)                                 xrc "$@" ;; # SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
         *=)                                     ___xcmd_var "$subcmd" "$@" ;;
 
@@ -529,6 +549,12 @@ xcmd(){
 ___xcmd_x_cmd_advise_json(){
     cat <<A
 {
+    "hub": {
+        "share": null,
+        "public": null,
+        "private": null,
+        "ls": null
+    },
     "z": null,
     "uz": null,
     "ubu|alp|deb|cen|bus": null,
