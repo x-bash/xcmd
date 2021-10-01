@@ -423,7 +423,7 @@ ___xcmd_shell_exec(){
 
 ___xcmd_ls(){
     case "$1" in
-        *@*/*)
+        @*|*@*/*)
             shift
             ___xcmd_file_ls "$@"
             return
