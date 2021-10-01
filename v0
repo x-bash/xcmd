@@ -16,6 +16,10 @@ ___xcmd_readlink_recursive(){
     fi
 }
 
+___xcmd_list_resource(){
+    :
+}
+
 
 # Section : Unfinished ___xcmd_official_which
 
@@ -434,7 +438,7 @@ ___xcmd_hub(){
 }
 
 xcmd(){
-    local subcmd=$1;    shift
+    local subcmd=$1;    shift 2>/dev/null
     case "$subcmd" in
         login)                                  ___xcmd_login "$@" ;;
         register)                               ___xcmd_register "$@" ;;
@@ -508,8 +512,8 @@ xcmd(){
         _x_cmd_advise_json)     ___xcmd_x_cmd_advise_json "$@" ;;
         *)
             local p
-            if p="$(___xcmd_which_one "$subcmd")"; then
-                ___xcmd_run_by_file "$p" "$@"
+            if p="$(___xcmd_which_one "$subcmd" 2>/dev/null)"; then
+                ___xcmd_run_by_file "$p" "$@" 2>/dev/null
                 return
             fi
 
