@@ -421,6 +421,17 @@ ___xcmd_shell_exec(){
     fi
 }
 
+___xcmd_ls(){
+    case "$1" in
+        *@*/*)
+            shift
+            ___xcmd_file_ls "$@"
+            return
+            ;;
+    esac
+    ___xcmd_exa        "$@"
+}
+
 
 # file upload
 # file share
@@ -488,7 +499,7 @@ xcmd(){
 
         7zr)                                    ( xrc p7zr/v0   &&  p7zr "$@" )     ;;
         7z)                                     ( xrc p7z/v0    &&  p7z "$@" )      ;;
-        ls)                                     ___xcmd_exa        "$@"             ;;
+        ls)                                     ___xcmd_ls         "$@"             ;;
         ll)                                     ___xcmd_exa  -l    "$@"             ;;
         ps)                                     ___xcmd_procs      "$@"             ;;
         du)                                     ___xcmd_dust       "$@"             ;;
