@@ -456,7 +456,7 @@ ___xcmd_hub(){
         upload)         ___xcmd_file_upload "$@" ;;
         share)          ___xcmd_file_share "$@" ;;
         public)         ___xcmd_file_share "$@" ;;
-        private)        ___xcmd_file_share "$@" ;;
+        private)        ___xcmd_file_private "$@" ;;
     esac
 }
 
