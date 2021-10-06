@@ -2,6 +2,8 @@
 
 xrc log init xcmd
 
+xrc xcmd/_v0/initrc
+
 ___xcmd_readlink_recursive(){
     if [ -L "${1:?Provide link}" ]; then
         local next_link
