@@ -465,6 +465,18 @@ xcmd(){
 
         i|install)                                ___xcmd_install "$@" ;;
 
+        upgrade)    shift;  eval "$(curl https://get.x-cmd.com/script)" ;;
+        clear)      shift;
+                    if ! grep "___xcmd_http_get()" "$___X_CMD_XRC_PATH/../boot" >/dev/null 2>&1; then
+                        xrc_log debug "'$___X_CMD_XRC_PATH/../boot' NOT found. Please manually clear cache folder: $___X_CMD_XRC_PATH"
+                        return 1
+                    fi
+                    rm -rf "$___X_CMD_XRC_PATH" ;;
+        reinstall)
+                    xrc clear
+                    RELOAD=1 xrc upgrade
+                    ;;
+
         z)                                      (   xrc zuz && zuz z "$@"   ) ;;
         uz)                                     (   xrc zuz && zuz uz "$@"  ) ;;
         notify)                                 ___xcmd_notify "$@"  ;;
