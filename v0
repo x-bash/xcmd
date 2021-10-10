@@ -457,6 +457,8 @@ xcmd(){
         token)                                  ___xcmd_token "$@" ;;
         hub)                                    ___xcmd_hub "$@" ;;
 
+        initrc)                                 ( xrc xcmd/_v0/initrc && ___x_cmd_initrc "$@"; ) ;;
+
         rc|src)                                 xrc "$@" ;; # SRC_LOADER=bash eval "$(_xrc_print_code "$@")" ;;
         *=)                                     ___xcmd_var "$subcmd" "$@" ;;
 
