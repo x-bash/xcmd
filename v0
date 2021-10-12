@@ -564,6 +564,30 @@ ___xcmd_x_cmd_advise_json(){
         "private": [ "@me/" ],
         "ls": [ "@me/" ]
     },
+
+    "update|u": {},
+    "upgrade": {},
+    "reinstall": {},
+
+    "initrc": {
+        "cat": null
+        "which|w": null,
+        "mod": {
+            "add|+": null,
+            "del|-": "x initrc mod ls",
+            "ls": null
+        }
+    },
+
+    "log": {
+        "init": {},
+        "timestamp": {
+            "on": {},
+            "off": {}
+        },
+        "#n": "___x_cmd_log_completer"
+    },
+
     "z": null,
     "uz": null,
     "ubu|alp|deb|cen|bus": null,
